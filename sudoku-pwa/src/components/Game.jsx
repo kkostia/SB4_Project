@@ -4,10 +4,18 @@ import { checkWin } from "../api/sudokuAPI";
 export default function GameBoard({ puzzle, solution, difficulty, onBack }) {
   const [board, setBoard] = useState(puzzle.map(r => [...r]));
   const [selected, setSelected] = useState(null);
+  const [timer, setTimer] = useState(0);
   const [won, setWon] = useState(false);
 
+  // Timer
+  useEffect(() => {
+    if (won) return;
+    const t = setInterval(() => setTimer(s => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [won]);
+
   function handleCellClick(r, c) {
-    if (puzzle[r][c] !== 0) return; 
+    if (puzzle[r][c] !== 0) return; // given cell, can't change
     setSelected([r, c]);
   }
 
@@ -20,6 +28,12 @@ export default function GameBoard({ puzzle, solution, difficulty, onBack }) {
     if (checkWin(newBoard, solution)) setWon(true);
   }
 
+  function formatTime(s) {
+    const m = Math.floor(s / 60).toString().padStart(2, "0");
+    const sec = (s % 60).toString().padStart(2, "0");
+    return `${m}:${sec}`;
+  }
+
   return (
     <div style={s.page}>
 
@@ -27,12 +41,13 @@ export default function GameBoard({ puzzle, solution, difficulty, onBack }) {
       <div style={s.header}>
         <button onClick={onBack} style={s.backBtn}>← Back</button>
         <span style={s.diffLabel}>{difficulty.label}</span>
+        <span style={s.timer}>{formatTime(timer)}</span>
       </div>
 
       {/* Win banner */}
       {won && (
         <div style={s.winBanner}>
-          🎉 Solved !
+          🎉 Solved in {formatTime(timer)}!
         </div>
       )}
 
