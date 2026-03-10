@@ -1,30 +1,48 @@
 import { useState } from "react";
 import HomePage from "./components/HomePage.jsx";
+import GameBoard from "./components/Game.jsx";
+import { fetchPuzzle } from "./api/sudokuAPI.js";
 
 function App() {
   const [screen, setScreen] = useState("home");
   const [difficulty, setDifficulty] = useState(null);
+  const [puzzle, setPuzzle] = useState(null);
+  const [solution, setSolution] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  function handleStartGame(diff) {
-    setDifficulty(diff);
-    setScreen("game");
+  async function handleStartGame(diff) {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchPuzzle(diff);
+      setDifficulty(diff);
+      setPuzzle(data.puzzle);
+      setSolution(data.solution);
+      setScreen("game");
+    } catch (err) {
+      setError("Failed to load puzzle. Try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  if (screen === "home") {
-    return <HomePage onStartGame={handleStartGame} bestTimes={{}} />;
-  }
+  if (screen === "home") return (
+    <>
+      <HomePage onStartGame={handleStartGame} />
+      {loading && <p style={{ color: "#fff", textAlign: "center" }}>Loading...</p>}
+      {error   && <p style={{ color: "#f87171", textAlign: "center" }}>{error}</p>}
+    </>
+  );
 
-  if (screen === "game") {
-    return (
-      <div style={{ color: "#fff", padding: 40, background: "#0a0a0f", minHeight: "100vh" }}>
-        <button onClick={() => setScreen("home")} style={{ color: "#fff", background: "none", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, padding: "8px 16px", cursor: "pointer", marginBottom: 24 }}>
-          ← Back
-        </button>
-        <h2>Playing: {difficulty?.label}</h2>
-        <p style={{ color: "rgba(255,255,255,0.4)" }}>Game board goes here</p>
-      </div>
-    );
-  }
+  if (screen === "game") return (
+    <GameBoard
+      puzzle={puzzle}
+      solution={solution}
+      difficulty={difficulty}
+      onBack={() => setScreen("home")}
+    />
+  );
 }
 
 export default App;
