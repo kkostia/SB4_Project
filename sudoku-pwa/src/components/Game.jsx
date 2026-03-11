@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, } from "react";
 import { checkWin } from "../api/sudokuAPI";
 
-export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onBack }) {
+export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onBack, onGameEnd }) {
   const [board, setBoard] = useState(puzzle.map(r => [...r]));
   const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -12,10 +12,7 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
   const isTimed = typeof timeLimit === "number" && timeLimit > 0;
   const isOver = won || timedOut;
 
-  // Debug: log what timeLimit we received
-  useEffect(() => {
-    console.log("[GameBoard] timeLimit prop:", timeLimit, "isTimed:", isTimed);
-  }, []);
+  
 
   // Single simple timer: always counts elapsed seconds up
   useEffect(() => {
@@ -47,7 +44,18 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
     const newBoard = board.map(row => [...row]);
     newBoard[r][c] = num;
     setBoard(newBoard);
-    if (checkWin(newBoard, solution)) setWon(true);
+    if (checkWin(newBoard, solution)) {
+      setWon(true);
+      onGameEnd({ difficulty: difficulty.id, elapsed: elapsed, won: true });
+    }
+  }
+
+  function handleUndo() {
+    if (history.length === 0) return;
+    const prev = history[history.length - 1];
+    setBoard(prev);
+    setHistory(h => h.slice(0, -1));
+    setWon(false);
   }
 
   function handleUndo() {
@@ -71,6 +79,15 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
       {/* Header */}
       <div style={s.header}>
         <button onClick={onBack} style={s.backBtn}>← Back</button>
+        {/* TEMP: cheat button for testing — remove before commit */}
+        {process.env.NODE_ENV === "development" && (
+          <button
+            onClick={() => { setWon(true); onGameEnd({ difficulty: difficulty.id, elapsed: 42, won: true }); }}
+            style={{ background: "red", color: "#fff", border: "none", borderRadius: "6px", padding: "4px 8px", cursor: "pointer", fontSize: "11px" }}
+          >
+            WIN
+          </button>
+        )}
         <span style={s.diffLabel}>{difficulty.label}</span>
         <span style={{ ...s.timer, color: timerColor }}>
           {isTimed ? `⏱ ${formatTime(displaySeconds)}` : formatTime(displaySeconds)}

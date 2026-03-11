@@ -2,14 +2,14 @@ import { useState } from "react";
 
 const DIFFICULTIES = [
     //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
-  { id: "easy", label: "Beginner - Easy", clues: 50, tagline: "We need some text here", icon: "○", color: "#34d399", filled: 8 },
-  { id: "medium", label: "Intermediate", clues: 32, tagline: "We need some text here", icon: "◉", color: "#fbbf24", filled: 4 },
-  { id: "hard", label: "Hard", clues: 24, tagline: "We need some text here", icon: "●", color: "#f87171", filled: 2 },
+  { id: "easy", label: "Beginner - Easy", clues: 50, tagline: "Great for beginners, plenty of clues", icon: "○", color: "#34d399", filled: 8 },
+  { id: "medium", label: "Intermediate", clues: 32, tagline: "A solid challenge for regular players", icon: "◉", color: "#fbbf24", filled: 4 },
+  { id: "hard", label: "Hard", clues: 24, tagline: "For experienced solvers only", icon: "●", color: "#f87171", filled: 2 },
   { id: "adaptive", label: "Adaptive", clues: 17, tagline: "In development", icon: "⬛", color: "#e879f9", filled: 1, disabled: true },
 ];
 
 const TIME_LIMITS = [
-  { label: "10 sec", seconds: 10 },
+  { label: "3 min", seconds: 180 },
   { label: "5 min", seconds: 300 },
   { label: "10 min", seconds: 600 },
   { label: "∞", seconds: null },
@@ -29,7 +29,7 @@ function MiniGrid({ filled, color }) {
   );
 }
 
-export default function HomePage({ onStartGame, bestTimes = {} }) {
+export default function HomePage({ onStartGame, lastResult, bestTimes = {} }) {
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
 
@@ -43,6 +43,35 @@ export default function HomePage({ onStartGame, bestTimes = {} }) {
         </div>
         <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.3)", margin: 0 }}>Train your mind with SUDO</p>
       </header>
+
+      {lastResult && (() => {
+        const order = ["easy", "medium", "hard"];
+        const idx = order.indexOf(lastResult.difficulty);
+        const next = order[idx + 1];
+        const mins = Math.floor(lastResult.elapsed / 60);
+        const secs = lastResult.elapsed % 60;
+        const timeStr = `${mins}m ${secs}s`;
+        const nextDiff = DIFFICULTIES.find(d => d.id === next);
+
+        return (
+          <div style={{ margin: "24px 0 0", padding: "14px 16px", borderRadius: "12px", background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)" }}>
+            <p style={{ margin: 0, fontSize: "13px", color: "rgba(255,255,255,0.5)" }}>LAST GAME</p>
+            <p style={{ margin: "4px 0 0", fontSize: "15px", fontWeight: 700, color: "#fff" }}>
+              ✅ {DIFFICULTIES.find(d => d.id === lastResult.difficulty)?.label} solved in {timeStr}
+            </p>
+            {nextDiff && (
+              <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#818cf8" }}>
+                💡 Ready for a bigger challenge? Try <strong>{nextDiff.label}</strong> next!
+              </p>
+            )}
+            {!nextDiff && (
+              <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#f59e0b" }}>
+                🏆 You've conquered the hardest level!
+              </p>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Time limit selector */}
       <div style={{ marginTop: "40px", marginBottom: "28px" }}>
