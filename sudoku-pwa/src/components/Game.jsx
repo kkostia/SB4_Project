@@ -50,6 +50,15 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
     }
   }
 
+  // Creating a reset function to start over if needed
+  function handleReset() {
+    setBoard(puzzle.map(row => [...row]));
+    setSelected(null);
+    setElapsed(0);
+    setWon(false);
+    setTimedOut(false);
+  }
+
   function handleUndo() {
     if (history.length === 0) return;
     const prev = history[history.length - 1];
@@ -79,6 +88,10 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
       {/* Header */}
       <div style={s.header}>
         <button onClick={onBack} style={s.backBtn}>← Back</button>
+
+        {/* Reset button */}
+        <button onClick={handleReset} style={s.backBtn}>Reset</button>
+
         {/* TEMP: cheat button for testing — remove before commit */}
         {process.env.NODE_ENV === "development" && (
           <button
