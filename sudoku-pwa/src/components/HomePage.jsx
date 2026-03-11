@@ -29,7 +29,7 @@ function MiniGrid({ filled, color }) {
   );
 }
 
-export default function HomePage({ onStartGame, bestTimes = {} }) {
+export default function HomePage({ onStartGame, lastResult, bestTimes = {} }) {
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
 
@@ -43,6 +43,35 @@ export default function HomePage({ onStartGame, bestTimes = {} }) {
         </div>
         <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.3)", margin: 0 }}>Train your mind with SUDO</p>
       </header>
+
+      {lastResult && (() => {
+        const order = ["easy", "medium", "hard"];
+        const idx = order.indexOf(lastResult.difficulty);
+        const next = order[idx + 1];
+        const mins = Math.floor(lastResult.elapsed / 60);
+        const secs = lastResult.elapsed % 60;
+        const timeStr = `${mins}m ${secs}s`;
+        const nextDiff = DIFFICULTIES.find(d => d.id === next);
+
+        return (
+          <div style={{ margin: "24px 0 0", padding: "14px 16px", borderRadius: "12px", background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)" }}>
+            <p style={{ margin: 0, fontSize: "13px", color: "rgba(255,255,255,0.5)" }}>LAST GAME</p>
+            <p style={{ margin: "4px 0 0", fontSize: "15px", fontWeight: 700, color: "#fff" }}>
+              ✅ {DIFFICULTIES.find(d => d.id === lastResult.difficulty)?.label} solved in {timeStr}
+            </p>
+            {nextDiff && (
+              <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#818cf8" }}>
+                💡 Ready for a bigger challenge? Try <strong>{nextDiff.label}</strong> next!
+              </p>
+            )}
+            {!nextDiff && (
+              <p style={{ margin: "6px 0 0", fontSize: "13px", color: "#f59e0b" }}>
+                🏆 You've conquered the hardest level!
+              </p>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Time limit selector */}
       <div style={{ marginTop: "40px", marginBottom: "28px" }}>

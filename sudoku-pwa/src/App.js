@@ -11,6 +11,7 @@ function App() {
   const [timeLimit, setTimeLimit] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [lastResult, setLastResult] = useState(null);
 
   async function handleStartGame(diff, limit) {
     setLoading(true);
@@ -31,7 +32,7 @@ function App() {
 
   if (screen === "home") return (
     <>
-      <HomePage onStartGame={handleStartGame} />
+      <HomePage onStartGame={handleStartGame} lastResult={lastResult} />
       {loading && <p style={{ color: "#fff", textAlign: "center" }}>Loading...</p>}
       {error   && <p style={{ color: "#f87171", textAlign: "center" }}>{error}</p>}
     </>
@@ -43,6 +44,7 @@ function App() {
       solution={solution}
       difficulty={difficulty}
       timeLimit={timeLimit}
+      onGameEnd={(result) => setLastResult(result)}
       onBack={() => setScreen("home")}
     />
   );

@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, } from "react";
 import { checkWin } from "../api/sudokuAPI";
 
-export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onBack }) {
+export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onBack, onGameEnd }) {
   const [board, setBoard] = useState(puzzle.map(r => [...r]));
   const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -12,10 +12,7 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
   const isTimed = typeof timeLimit === "number" && timeLimit > 0;
   const isOver = won || timedOut;
 
-  // Debug: log what timeLimit we received
-  useEffect(() => {
-    console.log("[GameBoard] timeLimit prop:", timeLimit, "isTimed:", isTimed);
-  }, []);
+  
 
   // Single simple timer: always counts elapsed seconds up
   useEffect(() => {
@@ -47,7 +44,10 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
     const newBoard = board.map(row => [...row]);
     newBoard[r][c] = num;
     setBoard(newBoard);
-    if (checkWin(newBoard, solution)) setWon(true);
+    if (checkWin(newBoard, solution)) {
+      setWon(true);
+      onGameEnd({ difficulty: difficulty.id, elapsed: elapsed, won: true });
+    }
   }
 
   function handleUndo() {
