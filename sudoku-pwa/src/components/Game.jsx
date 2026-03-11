@@ -44,9 +44,29 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
   function handleNumberInput(num) {
     if (!selected || isOver) return;
     const [r, c] = selected;
+    if (puzzle[r][c] !== 0) return;
+
     const newBoard = board.map(row => [...row]);
     newBoard[r][c] = num;
     setBoard(newBoard);
+
+    // Checking if a move is wrong in challenge mdoe 
+    if (challengeMode && num !== solution[r][c]) {
+      const newMistakes = mistakes + 1;
+      setMistakes(newMistakes);
+
+      if (newMistakes >= maxMistakes) {
+        setTimedOut(true);
+        onGameEnd({
+          difficulty: difficulty.id,
+          elapsed: elapsed,
+          won: false
+        });
+        return;
+      }
+    }
+    
+    
     if (checkWin(newBoard, solution)) {
       setWon(true);
       onGameEnd({ difficulty: difficulty.id, elapsed: elapsed, won: true });
