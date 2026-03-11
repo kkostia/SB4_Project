@@ -8,10 +8,11 @@ function App() {
   const [difficulty, setDifficulty] = useState(null);
   const [puzzle, setPuzzle] = useState(null);
   const [solution, setSolution] = useState(null);
+  const [timeLimit, setTimeLimit] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  async function handleStartGame(diff) {
+  async function handleStartGame(diff, limit) {
     setLoading(true);
     setError(null);
     try {
@@ -19,6 +20,7 @@ function App() {
       setDifficulty(diff);
       setPuzzle(data.puzzle);
       setSolution(data.solution);
+      setTimeLimit(limit ?? null);
       setScreen("game");
     } catch (err) {
       setError("Failed to load puzzle. Try again.");
@@ -40,6 +42,7 @@ function App() {
       puzzle={puzzle}
       solution={solution}
       difficulty={difficulty}
+      timeLimit={timeLimit}
       onBack={() => setScreen("home")}
     />
   );
