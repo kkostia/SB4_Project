@@ -60,6 +60,7 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
     setElapsed(0);
     setWon(false);
     setTimedOut(false);
+    setMistakes(0);
   }
 
   function handleUndo() {
