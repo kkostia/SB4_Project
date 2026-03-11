@@ -8,7 +8,10 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
   const [elapsed, setElapsed] = useState(0);
   const [won, setWon] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
-
+  const [mistakes, setMistakes] = useState(0);
+  
+  const maxMistakes = 5;
+  const challengeMode = true;
   const isTimed = typeof timeLimit === "number" && timeLimit > 0;
   const isOver = won || timedOut;
 
