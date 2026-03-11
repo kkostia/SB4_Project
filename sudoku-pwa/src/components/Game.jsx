@@ -126,6 +126,7 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
           </button>
         )}
         <span style={s.diffLabel}>{difficulty.label}</span>
+        <span style={s.diffLabel}>Mistakes: {mistakes}/{maxMistakes}</span>
         <span style={{ ...s.timer, color: timerColor }}>
           {isTimed ? `⏱ ${formatTime(displaySeconds)}` : formatTime(displaySeconds)}
         </span>
