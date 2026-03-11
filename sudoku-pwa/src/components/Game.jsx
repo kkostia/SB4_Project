@@ -58,6 +58,14 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
     setWon(false);
   }
 
+  function handleUndo() {
+    if (history.length === 0) return;
+    const prev = history[history.length - 1];
+    setBoard(prev);
+    setHistory(h => h.slice(0, -1));
+    setWon(false);
+  }
+
   function formatTime(s) {
     const m = Math.floor(s / 60).toString().padStart(2, "0");
     const sec = (s % 60).toString().padStart(2, "0");
@@ -185,7 +193,7 @@ const s = {
     fontSize: "clamp(14px, 3.5vw, 20px)", userSelect: "none",
   },
   numpad: {
-    display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "8px",
+    display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px",
   },
   numBtn: {
     padding: "14px", background: "rgba(255,255,255,0.06)",
