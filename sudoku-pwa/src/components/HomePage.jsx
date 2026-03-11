@@ -2,14 +2,14 @@ import { useState } from "react";
 
 const DIFFICULTIES = [
     //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
-  { id: "easy", label: "Beginner - Easy", clues: 50, tagline: "We need some text here", icon: "○", color: "#34d399", filled: 8 },
-  { id: "medium", label: "Intermediate", clues: 32, tagline: "We need some text here", icon: "◉", color: "#fbbf24", filled: 4 },
-  { id: "hard", label: "Hard", clues: 24, tagline: "We need some text here", icon: "●", color: "#f87171", filled: 2 },
+  { id: "easy", label: "Beginner - Easy", clues: 50, tagline: "Great for beginners, plenty of clues", icon: "○", color: "#34d399", filled: 8 },
+  { id: "medium", label: "Intermediate", clues: 32, tagline: "A solid challenge for regular players", icon: "◉", color: "#fbbf24", filled: 4 },
+  { id: "hard", label: "Hard", clues: 24, tagline: "For experienced solvers only", icon: "●", color: "#f87171", filled: 2 },
   { id: "adaptive", label: "Adaptive", clues: 17, tagline: "In development", icon: "⬛", color: "#e879f9", filled: 1, disabled: true },
 ];
 
 const TIME_LIMITS = [
-  { label: "10 sec", seconds: 10 },
+  { label: "3 min", seconds: 180 },
   { label: "5 min", seconds: 300 },
   { label: "10 min", seconds: 600 },
   { label: "∞", seconds: null },
