@@ -1,31 +1,61 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { checkWin } from "../api/sudokuAPI";
 
-export default function GameBoard({ puzzle, solution, difficulty, onBack }) {
+export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onBack }) {
   const [board, setBoard] = useState(puzzle.map(r => [...r]));
+  const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [timer, setTimer] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
   const [won, setWon] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
 
-  // Timer
+  const isTimed = typeof timeLimit === "number" && timeLimit > 0;
+  const isOver = won || timedOut;
+
+  // Debug: log what timeLimit we received
   useEffect(() => {
-    if (won) return;
-    const t = setInterval(() => setTimer(s => s + 1), 1000);
+    console.log("[GameBoard] timeLimit prop:", timeLimit, "isTimed:", isTimed);
+  }, []);
+
+  // Single simple timer: always counts elapsed seconds up
+  useEffect(() => {
+    if (isOver) return;
+    const t = setInterval(() => setElapsed(s => s + 1), 1000);
     return () => clearInterval(t);
-  }, [won]);
+  }, [isOver]);
+
+  // Timeout check: when elapsed reaches timeLimit, trigger timeout
+  useEffect(() => {
+    if (isTimed && elapsed >= timeLimit && !won) {
+      setTimedOut(true);
+    }
+  }, [elapsed, isTimed, timeLimit, won]);
+
+  // Display value: countdown if timed, count-up if unlimited
+  const displaySeconds = isTimed ? Math.max(0, timeLimit - elapsed) : elapsed;
+  const timerColor = isTimed && displaySeconds <= 30 ? "#f87171" : "#fff";
 
   function handleCellClick(r, c) {
+    if (isOver) return;
     if (puzzle[r][c] !== 0) return; // given cell, can't change
     setSelected([r, c]);
   }
 
   function handleNumberInput(num) {
-    if (!selected) return;
+    if (!selected || isOver) return;
     const [r, c] = selected;
     const newBoard = board.map(row => [...row]);
     newBoard[r][c] = num;
     setBoard(newBoard);
     if (checkWin(newBoard, solution)) setWon(true);
+  }
+
+  function handleUndo() {
+    if (history.length === 0) return;
+    const prev = history[history.length - 1];
+    setBoard(prev);
+    setHistory(h => h.slice(0, -1));
+    setWon(false);
   }
 
   function formatTime(s) {
@@ -34,6 +64,7 @@ export default function GameBoard({ puzzle, solution, difficulty, onBack }) {
     return `${m}:${sec}`;
   }
 
+
   return (
     <div style={s.page}>
 
@@ -41,18 +72,28 @@ export default function GameBoard({ puzzle, solution, difficulty, onBack }) {
       <div style={s.header}>
         <button onClick={onBack} style={s.backBtn}>← Back</button>
         <span style={s.diffLabel}>{difficulty.label}</span>
-        <span style={s.timer}>{formatTime(timer)}</span>
+        <span style={{ ...s.timer, color: timerColor }}>
+          {isTimed ? `⏱ ${formatTime(displaySeconds)}` : formatTime(displaySeconds)}
+        </span>
       </div>
 
       {/* Win banner */}
       {won && (
         <div style={s.winBanner}>
-          🎉 Solved in {formatTime(timer)}!
+          🎉 Solved in {formatTime(elapsed)}!
+        </div>
+      )}
+
+      {/* Timeout banner */}
+      {timedOut && (
+        <div style={s.timeoutBanner}>
+          ⏰ Time's up! Better luck next time.
+          <button onClick={onBack} style={s.tryAgainBtn}>Try Again</button>
         </div>
       )}
 
       {/* Grid */}
-      <div style={s.grid}>
+      <div style={{ ...s.grid, opacity: timedOut ? 0.4 : 1, pointerEvents: timedOut ? "none" : "auto" }}>
         {board.map((row, r) =>
           row.map((val, c) => {
             const isSelected = selected?.[0] === r && selected?.[1] === c;
@@ -114,6 +155,16 @@ const s = {
     background: "rgba(52,211,153,0.15)", border: "1px solid #34d399", borderRadius: "12px",
     padding: "14px", textAlign: "center", fontSize: "18px", fontWeight: 700,
     color: "#34d399", marginBottom: "16px",
+  },
+  timeoutBanner: {
+    background: "rgba(248,113,113,0.15)", border: "1px solid #f87171", borderRadius: "12px",
+    padding: "14px", textAlign: "center", fontSize: "18px", fontWeight: 700,
+    color: "#f87171", marginBottom: "16px", display: "flex", flexDirection: "column", gap: "10px",
+  },
+  tryAgainBtn: {
+    background: "rgba(248,113,113,0.2)", border: "1px solid #f87171", borderRadius: "8px",
+    color: "#f87171", padding: "8px 20px", cursor: "pointer", fontSize: "14px", fontWeight: 700,
+    alignSelf: "center",
   },
   grid: {
     display: "grid", gridTemplateColumns: "repeat(9, 1fr)",

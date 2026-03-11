@@ -9,7 +9,7 @@ const DIFFICULTIES = [
 ];
 
 const TIME_LIMITS = [
-  { label: "3 min", seconds: 180 },
+  { label: "10 sec", seconds: 10 },
   { label: "5 min", seconds: 300 },
   { label: "10 min", seconds: 600 },
   { label: "∞", seconds: null },
@@ -31,6 +31,7 @@ function MiniGrid({ filled, color }) {
 
 export default function HomePage({ onStartGame, bestTimes = {} }) {
   const [hovered, setHovered] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex", flexDirection: "column", padding: "0 20px 40px", fontFamily: "sans-serif", maxWidth: "480px", margin: "0 auto" }}>
@@ -48,18 +49,32 @@ export default function HomePage({ onStartGame, bestTimes = {} }) {
         <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", letterSpacing: "0.2em", marginBottom: "12px" }}>
           TIME LIMIT
         </div>
-      
         <div style={{ display: "flex", gap: "8px" }}>
-          {TIME_LIMITS.map((t) => { 
+          {TIME_LIMITS.map((t) => {
+            const isSelected = selectedTime.label === t.label;
             return (
               <button
+                key={t.label}
+                onClick={() => setSelectedTime(t)}
+                style={{
+                  flex: 1, padding: "10px 0", borderRadius: "10px", fontSize: "14px", fontWeight: 700,
+                  cursor: "pointer", border: "1px solid",
+                  borderColor: isSelected ? "#818cf8" : "rgba(255,255,255,0.1)",
+                  background: isSelected ? "rgba(99,102,241,0.2)" : "rgba(255,255,255,0.03)",
+                  color: isSelected ? "#818cf8" : "rgba(255,255,255,0.5)",
+                  transition: "all 0.15s",
+                }}
               >
                 {t.label}
               </button>
             );
           })}
         </div>
-       
+        {selectedTime.seconds && (
+          <p style={{ fontSize: "11px", color: "rgba(99,102,241,0.7)", margin: "8px 0 0", textAlign: "center" }}>
+            ⏱ Timed challenge — solve before the clock runs out!
+          </p>
+        )}
       </div>
 
       <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", letterSpacing: "0.2em", marginTop: "40px", marginBottom: "14px" }}>
@@ -84,7 +99,7 @@ export default function HomePage({ onStartGame, bestTimes = {} }) {
               }}
               onMouseEnter={() => setHovered(diff.id)}
               onMouseLeave={() => setHovered(null)}
-              onClick={() => onStartGame(diff)}
+              onClick={() => onStartGame(diff, selectedTime.seconds)}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                 <span style={{ fontSize: "22px", color: diff.color, width: "28px", textAlign: "center" }}>{diff.icon}</span>
