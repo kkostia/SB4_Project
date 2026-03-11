@@ -71,6 +71,15 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
       {/* Header */}
       <div style={s.header}>
         <button onClick={onBack} style={s.backBtn}>← Back</button>
+        {/* TEMP: cheat button for testing — remove before commit */}
+        {process.env.NODE_ENV === "development" && (
+          <button
+            onClick={() => { setWon(true); onGameEnd({ difficulty: difficulty.id, elapsed: 42, won: true }); }}
+            style={{ background: "red", color: "#fff", border: "none", borderRadius: "6px", padding: "4px 8px", cursor: "pointer", fontSize: "11px" }}
+          >
+            WIN
+          </button>
+        )}
         <span style={s.diffLabel}>{difficulty.label}</span>
         <span style={{ ...s.timer, color: timerColor }}>
           {isTimed ? `⏱ ${formatTime(displaySeconds)}` : formatTime(displaySeconds)}
