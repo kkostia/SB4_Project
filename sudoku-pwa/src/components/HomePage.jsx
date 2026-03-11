@@ -8,6 +8,13 @@ const DIFFICULTIES = [
   { id: "adaptive", label: "Adaptive", clues: 17, tagline: "In development", icon: "⬛", color: "#e879f9", filled: 1, disabled: true },
 ];
 
+const TIME_LIMITS = [
+  { label: "3 min", seconds: 180 },
+  { label: "5 min", seconds: 300 },
+  { label: "10 min", seconds: 600 },
+  { label: "∞", seconds: null },
+];
+
 function MiniGrid({ filled, color }) {
   const cells = Array.from({ length: 9 });
   const filledSet = new Set();
@@ -35,6 +42,25 @@ export default function HomePage({ onStartGame, bestTimes = {} }) {
         </div>
         <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.3)", margin: 0 }}>Train your mind with SUDO</p>
       </header>
+
+      {/* Time limit selector */}
+      <div style={{ marginTop: "40px", marginBottom: "28px" }}>
+        <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", letterSpacing: "0.2em", marginBottom: "12px" }}>
+          TIME LIMIT
+        </div>
+      
+        <div style={{ display: "flex", gap: "8px" }}>
+          {TIME_LIMITS.map((t) => { 
+            return (
+              <button
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+       
+      </div>
 
       <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.25)", letterSpacing: "0.2em", marginTop: "40px", marginBottom: "14px" }}>
         SELECT DIFFICULTY
