@@ -9,6 +9,7 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
   const [won, setWon] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
   const [mistakes, setMistakes] = useState(0);
+  const [paused, setPaused] = useState(false);
   
   const maxMistakes = 5;
   const challengeMode = true;
@@ -19,10 +20,10 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
 
   // Single simple timer: always counts elapsed seconds up
   useEffect(() => {
-    if (isOver) return;
+    if (isOver || paused) return;
     const t = setInterval(() => setElapsed(s => s + 1), 1000);
     return () => clearInterval(t);
-  }, [isOver]);
+  }, [isOver, paused]);
 
   // Timeout check: when elapsed reaches timeLimit, trigger timeout
   useEffect(() => {
@@ -36,13 +37,13 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
   const timerColor = isTimed && displaySeconds <= 30 ? "#f87171" : "#fff";
 
   function handleCellClick(r, c) {
-    if (isOver) return;
-    if (puzzle[r][c] !== 0) return; // given cell, can't change
+    if (isOver || paused) return;
+    if (puzzle[r][c] !== 0) return;
     setSelected([r, c]);
   }
 
   function handleNumberInput(num) {
-    if (!selected || isOver) return;
+    if (!selected || isOver || paused) return;
     const [r, c] = selected;
     if (puzzle[r][c] !== 0) return;
 
@@ -115,6 +116,7 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
 
         {/* Reset button */}
         <button onClick={handleReset} style={s.backBtn}>Reset</button>
+        {!isOver && <button onClick={() => setPaused(p => !p)} style={s.backBtn}>{paused ? "Resume" : "Pause"}</button>}
 
         {/* TEMP: cheat button for testing — remove before commit */}
         {process.env.NODE_ENV === "development" && (
@@ -148,7 +150,7 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
       )}
 
       {/* Grid */}
-      <div style={{ ...s.grid, opacity: timedOut ? 0.4 : 1, pointerEvents: timedOut ? "none" : "auto" }}>
+      <div style={{ ...s.grid, opacity: timedOut || paused ? 0.4 : 1, pointerEvents: timedOut || paused ? "none" : "auto", filter: paused ? "blur(4px)" : "none" }}>
         {board.map((row, r) =>
           row.map((val, c) => {
             const isSelected = selected?.[0] === r && selected?.[1] === c;
