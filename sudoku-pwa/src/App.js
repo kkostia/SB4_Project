@@ -6,12 +6,23 @@ import { fetchPuzzle } from "./api/sudokuAPI.js";
 
 function App() {
   const [theme, setTheme] = useState("dark");
+  const [largeFont, setLargeFont] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
   function toggleTheme() {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  }
+
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      "data-font-size",
+      largeFont ? "large" : "normal",
+    );
+  }, [largeFont]);
+  function toggleFontSize() {
+    setLargeFont((prev) => !prev);
   }
 
   const [screen, setScreen] = useState("home");
@@ -48,6 +59,8 @@ function App() {
           lastResult={lastResult}
           theme={theme}
           onToggleTheme={toggleTheme}
+          largeFont={largeFont}
+          onToggleFontSize={toggleFontSize}
         />
         {loading && (
           <p style={{ color: "#fff", textAlign: "center" }}>Loading...</p>
@@ -69,6 +82,7 @@ function App() {
         onBack={() => setScreen("home")}
         theme={theme}
         onToggleTheme={toggleTheme}
+        largeFont={largeFont}
       />
     );
 }

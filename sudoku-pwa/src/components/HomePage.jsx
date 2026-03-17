@@ -82,6 +82,8 @@ export default function HomePage({
   bestTimes = {},
   theme,
   onToggleTheme,
+  largeFont,
+  onToggleFontSize,
 }) {
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
@@ -111,7 +113,7 @@ export default function HomePage({
           <span style={{ fontSize: "28px" }}>⬛</span>
           <span
             style={{
-              fontSize: "36px",
+              fontSize: "var(--font-x1",
               fontWeight: 800,
               color: "var(--text-primary)",
               letterSpacing: "0.12em",
@@ -135,7 +137,29 @@ export default function HomePage({
         >
           {theme === "dark" ? "☀️" : "🌙"}
         </button>
-        <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: 0 }}>
+        <button
+          onClick={onToggleFontSize}
+          aria-label="Toggle large font size"
+          style={{
+            background: "none",
+            border: "1px solid var(--border-color)",
+            borderRadius: "8px",
+            color: "var(--text-primary)",
+            padding: "8px 14px",
+            cursor: "pointer",
+            fontSize: "var(--font-base)",
+            fontWeight: 700,
+          }}
+        >
+          {largeFont ? "A−" : "A+"}
+        </button>
+        <p
+          style={{
+            fontSize: "var(--font-sm)",
+            color: "var(--text-muted)",
+            margin: 0,
+          }}
+        >
           Train your mind with SUDO
         </p>
       </header>
@@ -163,7 +187,7 @@ export default function HomePage({
               <p
                 style={{
                   margin: 0,
-                  fontSize: "13px",
+                  fontSize: "var(--font-sm)",
                   color: "var(--text-muted)",
                 }}
               >
@@ -188,7 +212,7 @@ export default function HomePage({
                 <p
                   style={{
                     margin: "6px 0 0",
-                    fontSize: "13px",
+                    fontSize: "var(--font-sm)",
                     color: "#818cf8",
                   }}
                 >
@@ -200,7 +224,7 @@ export default function HomePage({
                 <p
                   style={{
                     margin: "6px 0 0",
-                    fontSize: "13px",
+                    fontSize: "var(--font-sm)",
                     color: "#f59e0b",
                   }}
                 >
@@ -215,7 +239,7 @@ export default function HomePage({
       <div style={{ marginTop: "40px", marginBottom: "28px" }}>
         <div
           style={{
-            fontSize: "10px",
+            fontSize: "var(--font-sm)",
             color: "rgba(255,255,255,0.25)",
             letterSpacing: "0.2em",
             marginBottom: "12px",
@@ -234,7 +258,7 @@ export default function HomePage({
                   flex: 1,
                   padding: "10px 0",
                   borderRadius: "10px",
-                  fontSize: "14px",
+                  fontSize: "var(--font-base)",
                   fontWeight: 700,
                   cursor: "pointer",
                   border: "1px solid",
@@ -267,7 +291,7 @@ export default function HomePage({
 
       <div
         style={{
-          fontSize: "10px",
+          fontSize: "var(--font-sm)",
           color: "rgba(255,255,255,0.25)",
           letterSpacing: "0.2em",
           marginTop: "40px",
@@ -328,7 +352,7 @@ export default function HomePage({
                 >
                   <span
                     style={{
-                      fontSize: "18px",
+                      fontSize: "var(--font-md)",
                       fontWeight: 700,
                       color: "var(--text-primary)",
                     }}
@@ -337,7 +361,7 @@ export default function HomePage({
                   </span>
                   <span
                     style={{
-                      fontSize: "12px",
+                      fontSize: "var(--font-sm)",
                       color: "var(--text-muted)",
                     }}
                   >

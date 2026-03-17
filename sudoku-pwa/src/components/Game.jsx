@@ -10,6 +10,7 @@ export default function GameBoard({
   onGameEnd,
   theme,
   onToggleTheme,
+  largeFont,
 }) {
   const [board, setBoard] = useState(puzzle.map((r) => [...r]));
   const [history, setHistory] = useState([]);
@@ -115,7 +116,7 @@ export default function GameBoard({
   }
 
   return (
-    <div style={s.page}>
+    <div className={largeFont ? "home-large-font" : ""} style={s.page}>
       {/* Header */}
       <div style={s.header}>
         <button onClick={onBack} style={s.backBtn}>
@@ -271,11 +272,15 @@ const s = {
     color: "var(--text-primary)",
     padding: "8px 14px",
     cursor: "pointer",
-    fontSize: "14px",
+    fontSize: "var(--font-sm)",
   },
-  diffLabel: { fontSize: "16px", fontWeight: 700, color: "var(--text-muted)" },
+  diffLabel: {
+    fontSize: "var(--font-base)",
+    fontWeight: 700,
+    color: "var(--text-muted)",
+  },
   timer: {
-    fontSize: "22px",
+    fontSize: "var(--font-lg)",
     fontWeight: 800,
     fontVariantNumeric: "tabular-nums",
   },
@@ -285,7 +290,7 @@ const s = {
     borderRadius: "12px",
     padding: "14px",
     textAlign: "center",
-    fontSize: "18px",
+    fontSize: "var(--font-md)",
     fontWeight: 700,
     color: "#34d399",
     marginBottom: "16px",
@@ -296,7 +301,7 @@ const s = {
     borderRadius: "12px",
     padding: "14px",
     textAlign: "center",
-    fontSize: "18px",
+    fontSize: "var(--font-md)",
     fontWeight: 700,
     color: "#f87171",
     marginBottom: "16px",
@@ -311,7 +316,7 @@ const s = {
     color: "#f87171",
     padding: "8px 20px",
     cursor: "pointer",
-    fontSize: "14px",
+    fontSize: "var(--font-sm)",
     fontWeight: 700,
     alignSelf: "center",
   },
@@ -342,7 +347,7 @@ const s = {
     border: "1px solid var(--border-color)",
     borderRadius: "10px",
     color: "var(--text-primary)",
-    fontSize: "20px",
+    fontSize: "var(--font-lg)",
     fontWeight: 700,
     cursor: "pointer",
   },
