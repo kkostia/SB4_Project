@@ -24,6 +24,50 @@
   --accent: #6366f1;
 }
 
+/* Ocean theme */
+[data-theme="ocean"] {
+  --bg-primary: #0c1a2e;
+  --bg-surface: rgba(255, 255, 255, 0.04);
+  --text-primary: #e0f2fe;
+  --text-muted: rgba(224, 242, 254, 0.4);
+  --border-color: rgba(56, 189, 248, 0.15);
+  --border-color-thick: rgba(56, 189, 248, 0.4);
+  --accent: #38bdf8;
+}
+
+/* Forest theme */
+[data-theme="forest"] {
+  --bg-primary: #0a1a0f;
+  --bg-surface: rgba(255, 255, 255, 0.04);
+  --text-primary: #d1fae5;
+  --text-muted: rgba(209, 250, 229, 0.4);
+  --border-color: rgba(52, 211, 153, 0.15);
+  --border-color-thick: rgba(52, 211, 153, 0.4);
+  --accent: #34d399;
+}
+
+/* Sunset theme */
+[data-theme="sunset"] {
+  --bg-primary: #1a0a0a;
+  --bg-surface: rgba(255, 255, 255, 0.04);
+  --text-primary: #ffe4e6;
+  --text-muted: rgba(255, 228, 230, 0.4);
+  --border-color: rgba(251, 113, 133, 0.15);
+  --border-color-thick: rgba(251, 113, 133, 0.4);
+  --accent: #fb7185;
+}
+
+/* Purple theme */
+[data-theme="purple"] {
+  --bg-primary: #0f0a1a;
+  --bg-surface: rgba(255, 255, 255, 0.04);
+  --text-primary: #ede9fe;
+  --text-muted: rgba(237, 233, 254, 0.4);
+  --border-color: rgba(167, 139, 250, 0.15);
+  --border-color-thick: rgba(167, 139, 250, 0.4);
+  --accent: #a78bfa;
+}
+
 /* Large font */
 [data-font-size="large"] {
   --font-sm: 15px;
