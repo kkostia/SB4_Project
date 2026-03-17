@@ -1,9 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import "./App.css";
 import HomePage from "./components/HomePage.jsx";
 import GameBoard from "./components/Game.jsx";
 import { fetchPuzzle } from "./api/sudokuAPI.js";
 
 function App() {
+  const [theme, setTheme] = useState("dark");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+  function toggleTheme() {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  }
+
   const [screen, setScreen] = useState("home");
   const [difficulty, setDifficulty] = useState(null);
   const [puzzle, setPuzzle] = useState(null);
@@ -30,24 +40,37 @@ function App() {
     }
   }
 
-  if (screen === "home") return (
-    <>
-      <HomePage onStartGame={handleStartGame} lastResult={lastResult} />
-      {loading && <p style={{ color: "#fff", textAlign: "center" }}>Loading...</p>}
-      {error   && <p style={{ color: "#f87171", textAlign: "center" }}>{error}</p>}
-    </>
-  );
+  if (screen === "home")
+    return (
+      <>
+        <HomePage
+          onStartGame={handleStartGame}
+          lastResult={lastResult}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
+        {loading && (
+          <p style={{ color: "#fff", textAlign: "center" }}>Loading...</p>
+        )}
+        {error && (
+          <p style={{ color: "#f87171", textAlign: "center" }}>{error}</p>
+        )}
+      </>
+    );
 
-  if (screen === "game") return (
-    <GameBoard
-      puzzle={puzzle}
-      solution={solution}
-      difficulty={difficulty}
-      timeLimit={timeLimit}
-      onGameEnd={(result) => setLastResult(result)}
-      onBack={() => setScreen("home")}
-    />
-  );
+  if (screen === "game")
+    return (
+      <GameBoard
+        puzzle={puzzle}
+        solution={solution}
+        difficulty={difficulty}
+        timeLimit={timeLimit}
+        onGameEnd={(result) => setLastResult(result)}
+        onBack={() => setScreen("home")}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
+    );
 }
 
 export default App;

@@ -1,8 +1,17 @@
-import { useState, useEffect, } from "react";
+import { useState, useEffect } from "react";
 import { checkWin } from "../api/sudokuAPI";
 
-export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onBack, onGameEnd }) {
-  const [board, setBoard] = useState(puzzle.map(r => [...r]));
+export default function GameBoard({
+  puzzle,
+  solution,
+  difficulty,
+  timeLimit,
+  onBack,
+  onGameEnd,
+  theme,
+  onToggleTheme,
+}) {
+  const [board, setBoard] = useState(puzzle.map((r) => [...r]));
   const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
   const [elapsed, setElapsed] = useState(0);
@@ -10,18 +19,16 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
   const [timedOut, setTimedOut] = useState(false);
   const [mistakes, setMistakes] = useState(0);
   const [paused, setPaused] = useState(false);
-  
+
   const maxMistakes = 5;
   const challengeMode = true;
   const isTimed = typeof timeLimit === "number" && timeLimit > 0;
   const isOver = won || timedOut;
 
-  
-
   // Single simple timer: always counts elapsed seconds up
   useEffect(() => {
     if (isOver || paused) return;
-    const t = setInterval(() => setElapsed(s => s + 1), 1000);
+    const t = setInterval(() => setElapsed((s) => s + 1), 1000);
     return () => clearInterval(t);
   }, [isOver, paused]);
 
@@ -47,11 +54,11 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
     const [r, c] = selected;
     if (puzzle[r][c] !== 0) return;
 
-    const newBoard = board.map(row => [...row]);
+    const newBoard = board.map((row) => [...row]);
     newBoard[r][c] = num;
     setBoard(newBoard);
 
-    // Checking if a move is wrong in challenge mdoe 
+    // Checking if a move is wrong in challenge mdoe
     if (challengeMode && num !== solution[r][c]) {
       const newMistakes = mistakes + 1;
       setMistakes(newMistakes);
@@ -61,13 +68,12 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
         onGameEnd({
           difficulty: difficulty.id,
           elapsed: elapsed,
-          won: false
+          won: false,
         });
         return;
       }
     }
-    
-    
+
     if (checkWin(newBoard, solution)) {
       setWon(true);
       onGameEnd({ difficulty: difficulty.id, elapsed: elapsed, won: true });
@@ -76,7 +82,7 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
 
   // Creating a reset function to start over if needed
   function handleReset() {
-    setBoard(puzzle.map(row => [...row]));
+    setBoard(puzzle.map((row) => [...row]));
     setSelected(null);
     setElapsed(0);
     setWon(false);
@@ -88,7 +94,7 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
     if (history.length === 0) return;
     const prev = history[history.length - 1];
     setBoard(prev);
-    setHistory(h => h.slice(0, -1));
+    setHistory((h) => h.slice(0, -1));
     setWon(false);
   }
 
@@ -96,61 +102,98 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
     if (history.length === 0) return;
     const prev = history[history.length - 1];
     setBoard(prev);
-    setHistory(h => h.slice(0, -1));
+    setHistory((h) => h.slice(0, -1));
     setWon(false);
   }
 
   function formatTime(s) {
-    const m = Math.floor(s / 60).toString().padStart(2, "0");
+    const m = Math.floor(s / 60)
+      .toString()
+      .padStart(2, "0");
     const sec = (s % 60).toString().padStart(2, "0");
     return `${m}:${sec}`;
   }
 
-
   return (
     <div style={s.page}>
-
       {/* Header */}
       <div style={s.header}>
-        <button onClick={onBack} style={s.backBtn}>← Back</button>
+        <button onClick={onBack} style={s.backBtn}>
+          ← Back
+        </button>
 
         {/* Reset button */}
-        <button onClick={handleReset} style={s.backBtn}>Reset</button>
-        {!isOver && <button onClick={() => setPaused(p => !p)} style={s.backBtn}>{paused ? "Resume" : "Pause"}</button>}
-
+        <button onClick={handleReset} style={s.backBtn}>
+          Reset
+        </button>
+        {!isOver && (
+          <button onClick={() => setPaused((p) => !p)} style={s.backBtn}>
+            {paused ? "Resume" : "Pause"}
+          </button>
+        )}
+        {/* Theme toggle */}
+        <button
+          onClick={onToggleTheme}
+          style={s.backBtn}
+          aria-label="Toggle theme"
+        >
+          {theme === "dark" ? "☀️" : "🌙"}
+        </button>
         {/* TEMP: cheat button for testing — remove before commit */}
         {process.env.NODE_ENV === "development" && (
           <button
-            onClick={() => { setWon(true); onGameEnd({ difficulty: difficulty.id, elapsed: 42, won: true }); }}
-            style={{ background: "red", color: "#fff", border: "none", borderRadius: "6px", padding: "4px 8px", cursor: "pointer", fontSize: "11px" }}
+            onClick={() => {
+              setWon(true);
+              onGameEnd({ difficulty: difficulty.id, elapsed: 42, won: true });
+            }}
+            style={{
+              background: "red",
+              color: "#fff",
+              border: "none",
+              borderRadius: "6px",
+              padding: "4px 8px",
+              cursor: "pointer",
+              fontSize: "11px",
+            }}
           >
             WIN
           </button>
         )}
         <span style={s.diffLabel}>{difficulty.label}</span>
-        <span style={s.diffLabel}>Mistakes: {mistakes}/{maxMistakes}</span>
+        <span style={s.diffLabel}>
+          Mistakes: {mistakes}/{maxMistakes}
+        </span>
         <span style={{ ...s.timer, color: timerColor }}>
-          {isTimed ? `⏱ ${formatTime(displaySeconds)}` : formatTime(displaySeconds)}
+          {isTimed
+            ? `⏱ ${formatTime(displaySeconds)}`
+            : formatTime(displaySeconds)}
         </span>
       </div>
 
       {/* Win banner */}
       {won && (
-        <div style={s.winBanner}>
-          🎉 Solved in {formatTime(elapsed)}!
-        </div>
+        <div style={s.winBanner}>🎉 Solved in {formatTime(elapsed)}!</div>
       )}
 
       {/* Timeout banner */}
       {timedOut && (
         <div style={s.timeoutBanner}>
           ⏰ Time's up! Better luck next time.
-          <button onClick={onBack} style={s.tryAgainBtn}>Try Again</button>
+          <button onClick={onBack} style={s.tryAgainBtn}>
+            Try Again
+          </button>
         </div>
       )}
 
       {/* Grid */}
-      <div style={{ ...s.grid, opacity: timedOut || paused ? 0.4 : 1, pointerEvents: timedOut || paused ? "none" : "auto", filter: paused ? "blur(4px)" : "none" }}>
+      <div
+        style={{
+          ...s.grid,
+          opacity: timedOut || paused ? 0.4 : 1,
+          pointerEvents: timedOut || paused ? "none" : "auto",
+          filter: paused ? "blur(4px)" : "none",
+        }}
+      >
         {board.map((row, r) =>
           row.map((val, c) => {
             const isSelected = selected?.[0] === r && selected?.[1] === c;
@@ -165,79 +208,142 @@ export default function GameBoard({ puzzle, solution, difficulty, timeLimit, onB
                 onClick={() => handleCellClick(r, c)}
                 style={{
                   ...s.cell,
-                  background: isSelected ? "rgba(99,102,241,0.35)" : "rgba(255,255,255,0.03)",
-                  color: isWrong ? "#f87171" : isGiven ? "#fff" : "#818cf8",
+                  background: isSelected
+                    ? "rgba(99,102,241,0.35)"
+                    : "var(--bg-surface)",
+                  color: isWrong
+                    ? "#f87171"
+                    : isGiven
+                      ? "var(--text-primary)"
+                      : "#818cf8",
                   fontWeight: isGiven ? 700 : 400,
-                  borderRight: thickRight ? "2px solid rgba(255,255,255,0.3)" : "1px solid rgba(255,255,255,0.08)",
-                  borderBottom: thickBottom ? "2px solid rgba(255,255,255,0.3)" : "1px solid rgba(255,255,255,0.08)",
+                  borderRight: thickRight
+                    ? "2px solid var(--border-color-thick)"
+                    : "1px solid var(--border-color)",
+                  borderBottom: thickBottom
+                    ? "2px solid var(--border-color-thick)"
+                    : "1px solid var(--border-color)",
                   cursor: isGiven ? "default" : "pointer",
                 }}
               >
                 {val !== 0 ? val : ""}
               </div>
             );
-          })
+          }),
         )}
       </div>
 
       {/* Number pad */}
       <div style={s.numpad}>
-        {[1,2,3,4,5,6,7,8,9].map(n => (
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
           <button key={n} style={s.numBtn} onClick={() => handleNumberInput(n)}>
             {n}
           </button>
         ))}
-        <button style={s.numBtn} onClick={() => handleNumberInput(0)}>✕</button>
+        <button style={s.numBtn} onClick={() => handleNumberInput(0)}>
+          ✕
+        </button>
       </div>
-
     </div>
   );
 }
 
 const s = {
   page: {
-    minHeight: "100vh", background: "#0a0a0f", color: "#fff",
-    fontFamily: "sans-serif", padding: "20px", maxWidth: "480px", margin: "0 auto",
+    minHeight: "100vh",
+    background: "var(--bg-primary)",
+    color: "var(--text-primary)",
+    fontFamily: "sans-serif",
+    padding: "20px",
+    maxWidth: "480px",
+    margin: "0 auto",
   },
   header: {
-    display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
   },
   backBtn: {
-    background: "none", border: "1px solid rgba(255,255,255,0.2)", borderRadius: "8px",
-    color: "#fff", padding: "8px 14px", cursor: "pointer", fontSize: "14px",
+    background: "none",
+    border: "1px solid var(--border-color)",
+    borderRadius: "8px",
+    color: "var(--text-primary)",
+    padding: "8px 14px",
+    cursor: "pointer",
+    fontSize: "14px",
   },
-  diffLabel: { fontSize: "16px", fontWeight: 700, color: "rgba(255,255,255,0.6)" },
-  timer: { fontSize: "22px", fontWeight: 800, fontVariantNumeric: "tabular-nums" },
+  diffLabel: { fontSize: "16px", fontWeight: 700, color: "var(--text-muted)" },
+  timer: {
+    fontSize: "22px",
+    fontWeight: 800,
+    fontVariantNumeric: "tabular-nums",
+  },
   winBanner: {
-    background: "rgba(52,211,153,0.15)", border: "1px solid #34d399", borderRadius: "12px",
-    padding: "14px", textAlign: "center", fontSize: "18px", fontWeight: 700,
-    color: "#34d399", marginBottom: "16px",
+    background: "rgba(52,211,153,0.15)",
+    border: "1px solid #34d399",
+    borderRadius: "12px",
+    padding: "14px",
+    textAlign: "center",
+    fontSize: "18px",
+    fontWeight: 700,
+    color: "#34d399",
+    marginBottom: "16px",
   },
   timeoutBanner: {
-    background: "rgba(248,113,113,0.15)", border: "1px solid #f87171", borderRadius: "12px",
-    padding: "14px", textAlign: "center", fontSize: "18px", fontWeight: 700,
-    color: "#f87171", marginBottom: "16px", display: "flex", flexDirection: "column", gap: "10px",
+    background: "rgba(248,113,113,0.15)",
+    border: "1px solid #f87171",
+    borderRadius: "12px",
+    padding: "14px",
+    textAlign: "center",
+    fontSize: "18px",
+    fontWeight: 700,
+    color: "#f87171",
+    marginBottom: "16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
   },
   tryAgainBtn: {
-    background: "rgba(248,113,113,0.2)", border: "1px solid #f87171", borderRadius: "8px",
-    color: "#f87171", padding: "8px 20px", cursor: "pointer", fontSize: "14px", fontWeight: 700,
+    background: "rgba(248,113,113,0.2)",
+    border: "1px solid #f87171",
+    borderRadius: "8px",
+    color: "#f87171",
+    padding: "8px 20px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: 700,
     alignSelf: "center",
   },
   grid: {
-    display: "grid", gridTemplateColumns: "repeat(9, 1fr)",
-    border: "2px solid rgba(255,255,255,0.2)", borderRadius: "12px", overflow: "hidden",
-    aspectRatio: "1", marginBottom: "16px",
+    display: "grid",
+    gridTemplateColumns: "repeat(9, 1fr)",
+    border: "2px solid rgba(255,255,255,0.2)",
+    borderRadius: "12px",
+    overflow: "hidden",
+    aspectRatio: "1",
+    marginBottom: "16px",
   },
   cell: {
-    display: "flex", alignItems: "center", justifyContent: "center",
-    fontSize: "clamp(14px, 3.5vw, 20px)", userSelect: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "clamp(14px, 3.5vw, 20px)",
+    userSelect: "none",
   },
   numpad: {
-    display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px",
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: "8px",
   },
   numBtn: {
-    padding: "14px", background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.1)", borderRadius: "10px",
-    color: "#fff", fontSize: "20px", fontWeight: 700, cursor: "pointer",
+    padding: "14px",
+    background: "var(--bg-surface)",
+    border: "1px solid var(--border-color)",
+    borderRadius: "10px",
+    color: "var(--text-primary)",
+    fontSize: "20px",
+    fontWeight: 700,
+    cursor: "pointer",
   },
 };
