@@ -81,7 +81,7 @@ export default function HomePage({
   lastResult,
   bestTimes = {},
   theme,
-  onToggleTheme,
+  onSetTheme,
   largeFont,
   onToggleFontSize,
 }) {
@@ -122,21 +122,29 @@ export default function HomePage({
             SUDOKU
           </span>
         </div>
-        <button
-          onClick={onToggleTheme}
-          aria-label="Toggle dark/light mode"
-          style={{
-            background: "none",
-            border: "1px solid rgba(255,255,255,0.2)",
-            borderRadius: "8px",
-            color: "var(--text-primary)",
-            padding: "8px 14px",
-            cursor: "pointer",
-            fontSize: "20px",
-          }}
-        >
-          {theme === "dark" ? "☀️" : "🌙"}
-        </button>
+        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+          {[
+            { id: "dark",   color: "#0a0a0f", border: "#555" },
+            { id: "light",  color: "#f3f4f6", border: "#ccc" },
+            { id: "ocean",  color: "#0c1a2e", border: "#38bdf8" },
+            { id: "forest", color: "#0a1a0f", border: "#34d399" },
+            { id: "sunset", color: "#1a0a0a", border: "#fb7185" },
+            { id: "purple", color: "#0f0a1a", border: "#a78bfa" },
+          ].map(t => (
+            <button
+              key={t.id}
+              onClick={() => onSetTheme(t.id)}
+              title={t.id}
+              style={{
+                width: "22px", height: "22px", borderRadius: "50%",
+                background: t.color, cursor: "pointer",
+                border: theme === t.id ? `2px solid ${t.border}` : "2px solid transparent",
+                outline: theme === t.id ? `2px solid ${t.border}` : "none",
+                padding: 0,
+              }}
+            />
+          ))}
+        </div>
         <button
           onClick={onToggleFontSize}
           aria-label="Toggle large font size"

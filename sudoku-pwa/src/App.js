@@ -5,15 +5,17 @@ import GameBoard from "./components/Game.jsx";
 import { fetchPuzzle } from "./api/sudokuAPI.js";
 
 function App() {
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState(() => localStorage.getItem("sudoku-theme") || "dark");
   const [largeFont, setLargeFont] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
-  function toggleTheme() {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  }
+
+  function handleSetTheme(newTheme) {
+  setTheme(newTheme);
+  localStorage.setItem("sudoku-theme", newTheme);
+}
 
   useEffect(() => {
     document.documentElement.setAttribute(
@@ -21,6 +23,7 @@ function App() {
       largeFont ? "large" : "normal",
     );
   }, [largeFont]);
+
   function toggleFontSize() {
     setLargeFont((prev) => !prev);
   }
@@ -58,7 +61,7 @@ function App() {
           onStartGame={handleStartGame}
           lastResult={lastResult}
           theme={theme}
-          onToggleTheme={toggleTheme}
+          onSetTheme={handleSetTheme}
           largeFont={largeFont}
           onToggleFontSize={toggleFontSize}
         />
@@ -81,7 +84,7 @@ function App() {
         onGameEnd={(result) => setLastResult(result)}
         onBack={() => setScreen("home")}
         theme={theme}
-        onToggleTheme={toggleTheme}
+        onSetTheme={handleSetTheme}
         largeFont={largeFont}
       />
     );
