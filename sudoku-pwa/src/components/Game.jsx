@@ -99,13 +99,6 @@ export default function GameBoard({
     setWon(false);
   }
 
-  function handleUndo() {
-    if (history.length === 0) return;
-    const prev = history[history.length - 1];
-    setBoard(prev);
-    setHistory((h) => h.slice(0, -1));
-    setWon(false);
-  }
 
   function formatTime(s) {
     const m = Math.floor(s / 60)
@@ -132,14 +125,7 @@ export default function GameBoard({
             {paused ? "Resume" : "Pause"}
           </button>
         )}
-        {/* Theme toggle */}
-        <button
-          onClick={onToggleTheme}
-          style={s.backBtn}
-          aria-label="Toggle theme"
-        >
-          {theme === "dark" ? "☀️" : "🌙"}
-        </button>
+        
         {/* TEMP: cheat button for testing — remove before commit */}
         {process.env.NODE_ENV === "development" && (
           <button

@@ -84,7 +84,6 @@ function App() {
         onGameEnd={(result) => setLastResult(result)}
         onBack={() => setScreen("home")}
         theme={theme}
-        onSetTheme={handleSetTheme}
         largeFont={largeFont}
       />
     );
