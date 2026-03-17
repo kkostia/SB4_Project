@@ -248,7 +248,7 @@ export default function HomePage({
         <div
           style={{
             fontSize: "var(--font-sm)",
-            color: "rgba(255,255,255,0.25)",
+            color: "var(--text-muted)",
             letterSpacing: "0.2em",
             marginBottom: "12px",
           }}
@@ -300,7 +300,7 @@ export default function HomePage({
       <div
         style={{
           fontSize: "var(--font-sm)",
-          color: "rgba(255,255,255,0.25)",
+          color: "var(--text-muted)",
           letterSpacing: "0.2em",
           marginTop: "40px",
           marginBottom: "14px",
