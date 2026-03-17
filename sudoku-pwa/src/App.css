@@ -1,3 +1,34 @@
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-surface: rgba(255, 255, 255, 0.025);
+  --text-primary: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.3);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-color-thick: rgba(255, 255, 255, 0.3);
+  --accent: #818cf8;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f3f4f6;
+  --bg-surface: #ffffff;
+  --text-primary: #111827;
+  --text-muted: rgba(0, 0, 0, 0.45);
+  --border-color: rgba(0, 0, 0, 0.12);
+  --border-color-thick: rgba(0, 0, 0, 0.35);
+  --accent: #6366f1;
+}
+
+/* Apply variables to body */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+  margin: 0;
+  font-family: sans-serif;
+}
+
 .App {
   text-align: center;
 }
@@ -14,14 +45,14 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: var(--bg-primary);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: var(--text-primary);
 }
 
 .App-link {
