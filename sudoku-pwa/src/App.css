@@ -6,6 +6,12 @@
   --border-color: rgba(255, 255, 255, 0.08);
   --border-color-thick: rgba(255, 255, 255, 0.3);
   --accent: #818cf8;
+
+  --font-sm: 12px;
+  --font-base: 16px;
+  --font-md: 18px;
+  --font-lg: 22px;
+  --font-xl: 36px;
 }
 
 [data-theme="light"] {
@@ -17,6 +23,16 @@
   --border-color-thick: rgba(0, 0, 0, 0.35);
   --accent: #6366f1;
 }
+
+/* Large font */
+[data-font-size="large"] {
+  --font-sm: 15px;
+  --font-base: 20px;
+  --font-md: 23px;
+  --font-lg: 28px;
+  --font-xl: 44px;
+}
+
 
 /* Apply variables to body */
 body {
