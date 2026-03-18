@@ -85,6 +85,8 @@ export default function HomePage({
   onSetTheme,
   largeFont,
   onToggleFontSize,
+  soundEnabled, 
+  onToggleSound,
 }) {
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
@@ -154,6 +156,22 @@ export default function HomePage({
           }}
         >
           {largeFont ? "A−" : "A+"}
+        </button>
+        {/*sound toggle button */}
+        <button
+          onClick={onToggleSound}
+          aria-label="Toggle sound"
+          style={{
+            background: "none",
+            border: "1px solid var(--border-color)",
+            borderRadius: "8px",
+            color: "var(--text-primary)",
+            padding: "8px 14px",
+            cursor: "pointer",
+            fontSize: "var(--font-base)",
+          }}
+        >
+          {soundEnabled ? "🔊" : "🔇"}
         </button>
         <p
           style={{

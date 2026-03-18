@@ -8,6 +8,9 @@ function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("sudoku-theme") || "dark");
   const [largeFont, setLargeFont] = useState(false);
 
+  //sound toggle state, persisted to localStorage
+  const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem("sudoku-sound") !== "off");
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
@@ -26,6 +29,14 @@ function App() {
 
   function toggleFontSize() {
     setLargeFont((prev) => !prev);
+  }
+
+  function toggleSound() {
+    setSoundEnabled(prev => {
+      const next = !prev;
+      localStorage.setItem("sudoku-sound", next ? "on" : "off");
+      return next;
+    });
   }
 
   const [screen, setScreen] = useState("home");
@@ -64,6 +75,8 @@ function App() {
           onSetTheme={handleSetTheme}
           largeFont={largeFont}
           onToggleFontSize={toggleFontSize}
+          soundEnabled={soundEnabled}
+          onToggleSound={toggleSound}
         />
         {loading && (
           <p style={{ color: "#fff", textAlign: "center" }}>Loading...</p>
@@ -85,6 +98,7 @@ function App() {
         onBack={() => setScreen("home")}
         theme={theme}
         largeFont={largeFont}
+        soundEnabled={soundEnabled}
       />
     );
 }

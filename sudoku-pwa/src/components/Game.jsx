@@ -8,9 +8,8 @@ export default function GameBoard({
   timeLimit,
   onBack,
   onGameEnd,
-  theme,
-  onToggleTheme,
   largeFont,
+  soundEnabled,
 }) {
   const [board, setBoard] = useState(puzzle.map((r) => [...r]));
   const [history, setHistory] = useState([]);
@@ -37,6 +36,7 @@ export default function GameBoard({
   useEffect(() => {
     if (isTimed && elapsed >= timeLimit && !won) {
       setTimedOut(true);
+      playSound("timeout");
     }
   }, [elapsed, isTimed, timeLimit, won]);
 
@@ -58,10 +58,12 @@ export default function GameBoard({
     const newBoard = board.map((row) => [...row]);
     newBoard[r][c] = num;
     setBoard(newBoard);
+    if (!challengeMode || num === solution[r][c]) playSound("correct");// sound for correct move (only when not wrong)
 
     // Checking if a move is wrong in challenge mdoe
     if (challengeMode && num !== solution[r][c]) {
       const newMistakes = mistakes + 1;
+      playSound("wrong");
       setMistakes(newMistakes);
 
       if (newMistakes >= maxMistakes) {
@@ -77,6 +79,7 @@ export default function GameBoard({
 
     if (checkWin(newBoard, solution)) {
       setWon(true);
+      playSound("win");
       onGameEnd({ difficulty: difficulty.id, elapsed: elapsed, won: true });
     }
   }
@@ -99,6 +102,52 @@ export default function GameBoard({
     setWon(false);
   }
 
+  // ADDED: Web Audio sound effects
+  function playSound(type) {
+    if (!soundEnabled) return;
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      if (type === "correct") {
+        osc.frequency.setValueAtTime(600, ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.15);
+      } else if (type === "wrong") {
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(150, ctx.currentTime);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.2);
+      } else if (type === "win") {
+        [523, 659, 784, 1047].forEach((freq, i) => {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.connect(g);
+          g.connect(ctx.destination);
+          o.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.12);
+          g.gain.setValueAtTime(0.1, ctx.currentTime + i * 0.12);
+          g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.2);
+          o.start(ctx.currentTime + i * 0.12);
+          o.stop(ctx.currentTime + i * 0.12 + 0.2);
+        });
+      } else if (type === "timeout") {
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(300, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+      }
+    } catch (e) {}
+  }
 
   function formatTime(s) {
     const m = Math.floor(s / 60)
