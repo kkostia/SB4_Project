@@ -47,6 +47,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastResult, setLastResult] = useState(null);
+  const [streak, setStreak] = useState(() => Number(localStorage.getItem("sudoku-streak")) || 0);
+
 
   async function handleStartGame(diff, limit) {
     setLoading(true);
@@ -77,7 +79,9 @@ function App() {
           onToggleFontSize={toggleFontSize}
           soundEnabled={soundEnabled}
           onToggleSound={toggleSound}
+          streak={streak}
         />
+
         {loading && (
           <p style={{ color: "#fff", textAlign: "center" }}>Loading...</p>
         )}
@@ -94,8 +98,17 @@ function App() {
         solution={solution}
         difficulty={difficulty}
         timeLimit={timeLimit}
-        onGameEnd={(result) => setLastResult(result)}
+        onGameEnd={(result) => {
+          setLastResult(result);
+          setStreak(prev => {
+            const next = result.won ? prev + 1 : 0;
+            localStorage.setItem("sudoku-streak", next);
+            return next;
+          });
+          setScreen("home");
+        }}
         onBack={() => setScreen("home")}
+
         theme={theme}
         largeFont={largeFont}
         soundEnabled={soundEnabled}

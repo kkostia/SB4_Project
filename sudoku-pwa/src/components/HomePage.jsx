@@ -87,7 +87,9 @@ export default function HomePage({
   onToggleFontSize,
   soundEnabled, 
   onToggleSound,
+  streak = 0,
 }) {
+
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
 
@@ -141,7 +143,25 @@ export default function HomePage({
             />
           ))}
         </div>
-        <button
+
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          marginTop: "16px",
+          padding: "8px 12px",
+          background: "rgba(251, 191, 36, 0.1)",
+          borderRadius: "8px",
+          width: "fit-content",
+          border: "1px solid rgba(251, 191, 36, 0.3)"
+        }}>
+          <span style={{ fontSize: "20px" }}>🔥</span>
+          <span style={{ fontWeight: 800, color: "#fbbf24", fontSize: "18px" }}>{streak}</span>
+          <span style={{ fontSize: "14px", color: "var(--text-muted)", fontWeight: 600 }}>STREAK</span>
+        </div>
+
+        <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
+
           onClick={onToggleFontSize}
           aria-label="Toggle large font size"
           style={{
