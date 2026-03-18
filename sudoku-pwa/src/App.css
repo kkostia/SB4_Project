@@ -93,6 +93,32 @@ body {
   text-align: center;
 }
 
+.title {
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  background: linear-gradient(90deg, #0c7b0c, #0f8eab);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 10px;
+  
+  /* subtle glow effect */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  
+  /* smooth hover animation */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.logo:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

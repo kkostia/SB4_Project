@@ -1,4 +1,5 @@
 import { useState } from "react";
+import logo from "../assets/logoSUDO.svg";
 
 const DIFFICULTIES = [
   //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
@@ -109,18 +110,11 @@ export default function HomePage({
             gap: "10px",
             marginBottom: "6px",
           }}
-        >
-          <span style={{ fontSize: "28px" }}>⬛</span>
-          <span
-            style={{
-              fontSize: "var(--font-x1",
-              fontWeight: 800,
-              color: "var(--text-primary)",
-              letterSpacing: "0.12em",
-            }}
-          >
-            SUDOKU
-          </span>
+
+        > <img src={logo} alt="Sudoku Logo" className="logo" />
+
+          <span className="title">SUDO</span>
+          
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
           {[
