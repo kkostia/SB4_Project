@@ -75,6 +75,8 @@ function App() {
           onSetTheme={handleSetTheme}
           largeFont={largeFont}
           onToggleFontSize={toggleFontSize}
+          soundEnabled={soundEnabled}
+          onToggleSound={toggleSound}
         />
         {loading && (
           <p style={{ color: "#fff", textAlign: "center" }}>Loading...</p>
@@ -96,6 +98,7 @@ function App() {
         onBack={() => setScreen("home")}
         theme={theme}
         largeFont={largeFont}
+        soundEnabled={soundEnabled}
       />
     );
 }
