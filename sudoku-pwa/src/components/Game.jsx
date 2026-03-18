@@ -36,6 +36,7 @@ export default function GameBoard({
   useEffect(() => {
     if (isTimed && elapsed >= timeLimit && !won) {
       setTimedOut(true);
+      playSound("timeout");
     }
   }, [elapsed, isTimed, timeLimit, won]);
 
@@ -57,10 +58,12 @@ export default function GameBoard({
     const newBoard = board.map((row) => [...row]);
     newBoard[r][c] = num;
     setBoard(newBoard);
+    if (!challengeMode || num === solution[r][c]) playSound("correct");// sound for correct move (only when not wrong)
 
     // Checking if a move is wrong in challenge mdoe
     if (challengeMode && num !== solution[r][c]) {
       const newMistakes = mistakes + 1;
+      playSound("wrong");
       setMistakes(newMistakes);
 
       if (newMistakes >= maxMistakes) {
@@ -76,6 +79,7 @@ export default function GameBoard({
 
     if (checkWin(newBoard, solution)) {
       setWon(true);
+      playSound("win");
       onGameEnd({ difficulty: difficulty.id, elapsed: elapsed, won: true });
     }
   }
