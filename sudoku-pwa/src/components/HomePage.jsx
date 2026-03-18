@@ -161,7 +161,7 @@ export default function HomePage({
         </div>
 
         <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-
+          <button
           onClick={onToggleFontSize}
           aria-label="Toggle large font size"
           style={{
@@ -193,6 +193,7 @@ export default function HomePage({
         >
           {soundEnabled ? "🔊" : "🔇"}
         </button>
+        </div>
         <p
           style={{
             fontSize: "var(--font-sm)",
