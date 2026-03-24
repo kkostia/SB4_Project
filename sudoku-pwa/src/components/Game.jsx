@@ -20,6 +20,11 @@ export default function GameBoard({
   const [mistakes, setMistakes] = useState(0);
   const [paused, setPaused] = useState(false);
 
+  //hint state
+  const [hint, setHint] = useState(null);
+  const [hintsUsed, setHintsUsed] = useState(0);
+  const maxHints = 3;
+
   const maxMistakes = 5;
   const challengeMode = true;
   const isTimed = typeof timeLimit === "number" && timeLimit > 0;
@@ -92,6 +97,8 @@ export default function GameBoard({
     setWon(false);
     setTimedOut(false);
     setMistakes(0);
+    setHint(null);
+    setHintsUsed(0); 
   }
 
   function handleUndo() {
@@ -100,6 +107,7 @@ export default function GameBoard({
     setBoard(prev);
     setHistory((h) => h.slice(0, -1));
     setWon(false);
+    setHint(null);
   }
 
   // ADDED: Web Audio sound effects
@@ -268,6 +276,24 @@ export default function GameBoard({
           }),
         )}
       </div>
+
+      {/* ADDED: Hint button */}
+      {!isOver && (
+        <button
+          //onClick={getHint}
+          disabled={hintsUsed >= maxHints}
+          style={{
+            width: "100%", padding: "12px", marginBottom: "12px",
+            background: hintsUsed >= maxHints ? "rgba(255,255,255,0.03)" : "rgba(251,191,36,0.1)",
+            border: `1px solid ${hintsUsed >= maxHints ? "var(--border-color)" : "rgba(251,191,36,0.4)"}`,
+            borderRadius: "10px", cursor: hintsUsed >= maxHints ? "not-allowed" : "pointer",
+            color: hintsUsed >= maxHints ? "var(--text-muted)" : "#fbbf24",
+            fontSize: "var(--font-sm)", fontWeight: 700,
+          }}
+        >
+          💡 Hint ({maxHints - hintsUsed} remaining)
+        </button>
+      )}
 
       {/* Number pad */}
       <div style={s.numpad}>
