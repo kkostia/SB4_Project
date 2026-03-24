@@ -107,8 +107,54 @@ export default function GameBoard({
     setBoard(prev);
     setHistory((h) => h.slice(0, -1));
     setWon(false);
-    setHint(null);
   }
+
+  // hint logic — tries Naked Single 
+function getHint() {
+  if (hintsUsed >= maxHints || isOver || paused) return;
+
+  // Helper: get all values present in a row
+  const rowVals = (r) => new Set(board[r].filter(v => v !== 0));
+  // Helper: get all values present in a column
+  const colVals = (c) => new Set(board.map(row => row[c]).filter(v => v !== 0));
+  // Helper: get all values present in a 3x3 box
+  const boxVals = (r, c) => {
+    const br = Math.floor(r / 3) * 3;
+    const bc = Math.floor(c / 3) * 3;
+    const vals = new Set();
+    for (let i = br; i < br + 3; i++)
+      for (let j = bc; j < bc + 3; j++)
+        if (board[i][j] !== 0) vals.add(board[i][j]);
+    return vals;
+  };
+  // Helper: get candidates for a cell
+  const getCandidates = (r, c) => {
+    if (board[r][c] !== 0) return [];
+    const used = new Set([...rowVals(r), ...colVals(c), ...boxVals(r, c)]);
+    return [1,2,3,4,5,6,7,8,9].filter(n => !used.has(n));
+  };
+
+  // Strategy 1: Naked Single — only one candidate for a cell
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      if (board[r][c] !== 0) continue;
+      const candidates = getCandidates(r, c);
+      if (candidates.length === 1) {
+        const value = candidates[0];
+        setHint({
+          row: r, col: c, value,
+          strategy: "Naked Single",
+          explanation: `This cell can only be ${value} — every other number already appears in its row, column, or box.`,
+        });
+        setHintsUsed(h => h + 1);
+        setSelected([r, c]);
+        return;
+      }
+    }
+  
+  }
+
+}
 
   // ADDED: Web Audio sound effects
   function playSound(type) {
@@ -301,7 +347,7 @@ export default function GameBoard({
       {/* Hint button */}
       {!isOver && (
         <button
-          //onClick={getHint}
+          onClick={getHint}
           disabled={hintsUsed >= maxHints}
           style={{
             width: "100%", padding: "12px", marginBottom: "12px",
