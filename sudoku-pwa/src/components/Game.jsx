@@ -57,6 +57,7 @@ export default function GameBoard({
 
   function handleNumberInput(num) {
     if (!selected || isOver || paused) return;
+    setHint(null);
     const [r, c] = selected;
     if (puzzle[r][c] !== 0) return;
 
@@ -107,9 +108,10 @@ export default function GameBoard({
     setBoard(prev);
     setHistory((h) => h.slice(0, -1));
     setWon(false);
+    setHint(null);
   }
 
-  // ADDED: hint logic — tries Naked Single then Hidden Single
+  // hint logic — tries Naked Single then Hidden Single
   function getHint() {
     if (hintsUsed >= maxHints || isOver || paused) return;
 
@@ -210,8 +212,13 @@ export default function GameBoard({
         }
       }
     }
-  
-  
+
+  // No hint found (puzzle may need advanced strategies)
+  setHint({
+    row: null, col: null, value: null,
+    strategy: "No hint available",
+    explanation: "No beginner-level hint found. Try scanning each row and column for missing numbers.",
+  });
 }
 
   // ADDED: Web Audio sound effects
