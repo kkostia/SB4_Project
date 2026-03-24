@@ -299,6 +299,7 @@ export default function GameBoard({
           <button
             onClick={() => {
               setWon(true);
+              playSound("win");
               onGameEnd({ difficulty: difficulty.id, elapsed: 42, won: true });
             }}
             style={{
@@ -363,9 +364,11 @@ export default function GameBoard({
                 onClick={() => handleCellClick(r, c)}
                 style={{
                   ...s.cell,
-                  background: isSelected
-                    ? "rgba(99,102,241,0.35)"
-                    : "var(--bg-surface)",
+                  background: hint && hint.row === r && hint.col === c
+                    ? "rgba(229, 251, 36, 0.35)"
+                    : isSelected
+                      ? "rgba(99,102,241,0.35)"
+                      : "var(--bg-surface)",
                   color: isWrong
                     ? "#f87171"
                     : isGiven
