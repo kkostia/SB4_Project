@@ -134,6 +134,31 @@ function getHint() {
     return [1,2,3,4,5,6,7,8,9].filter(n => !used.has(n));
   };
 
+  // ADDED: hint logic — tries Naked Single then Hidden Single
+function getHint() {
+  if (hintsUsed >= maxHints || isOver || paused) return;
+
+  // Helper: get all values present in a row
+  const rowVals = (r) => new Set(board[r].filter(v => v !== 0));
+  // Helper: get all values present in a column
+  const colVals = (c) => new Set(board.map(row => row[c]).filter(v => v !== 0));
+  // Helper: get all values present in a 3x3 box
+  const boxVals = (r, c) => {
+    const br = Math.floor(r / 3) * 3;
+    const bc = Math.floor(c / 3) * 3;
+    const vals = new Set();
+    for (let i = br; i < br + 3; i++)
+      for (let j = bc; j < bc + 3; j++)
+        if (board[i][j] !== 0) vals.add(board[i][j]);
+    return vals;
+  };
+  // Helper: get candidates for a cell
+  const getCandidates = (r, c) => {
+    if (board[r][c] !== 0) return [];
+    const used = new Set([...rowVals(r), ...colVals(c), ...boxVals(r, c)]);
+    return [1,2,3,4,5,6,7,8,9].filter(n => !used.has(n));
+  };
+
   // Strategy 1: Naked Single — only one candidate for a cell
   for (let r = 0; r < 9; r++) {
     for (let c = 0; c < 9; c++) {
@@ -151,8 +176,66 @@ function getHint() {
         return;
       }
     }
-  
   }
+
+  // Strategy 2: Hidden Single — a number has only one valid cell in a row/col/box
+  for (let num = 1; num <= 9; num++) {
+    // Check each row
+    for (let r = 0; r < 9; r++) {
+      const cells = [];
+      for (let c = 0; c < 9; c++)
+        if (board[r][c] === 0 && getCandidates(r, c).includes(num)) cells.push([r, c]);
+      if (cells.length === 1) {
+        const [hr, hc] = cells[0];
+        setHint({
+          row: hr, col: hc, value: num,
+          strategy: "Hidden Single",
+          explanation: `${num} must go in this cell — it's the only place in row ${hr + 1} where ${num} can legally go.`,
+        });
+        setHintsUsed(h => h + 1);
+        setSelected([hr, hc]);
+        return;
+      }
+    }
+    // Check each column
+    for (let c = 0; c < 9; c++) {
+      const cells = [];
+      for (let r = 0; r < 9; r++)
+        if (board[r][c] === 0 && getCandidates(r, c).includes(num)) cells.push([r, c]);
+      if (cells.length === 1) {
+        const [hr, hc] = cells[0];
+        setHint({
+          row: hr, col: hc, value: num,
+          strategy: "Hidden Single",
+          explanation: `${num} must go in this cell — it's the only place in column ${hc + 1} where ${num} can legally go.`,
+        });
+        setHintsUsed(h => h + 1);
+        setSelected([hr, hc]);
+        return;
+      }
+    }
+    // Check each box
+    for (let br = 0; br < 3; br++) {
+      for (let bc = 0; bc < 3; bc++) {
+        const cells = [];
+        for (let r = br * 3; r < br * 3 + 3; r++)
+          for (let c = bc * 3; c < bc * 3 + 3; c++)
+            if (board[r][c] === 0 && getCandidates(r, c).includes(num)) cells.push([r, c]);
+        if (cells.length === 1) {
+          const [hr, hc] = cells[0];
+          setHint({
+            row: hr, col: hc, value: num,
+            strategy: "Hidden Single",
+            explanation: `${num} must go in this cell — it's the only place in this 3×3 box where ${num} can legally go.`,
+          });
+          setHintsUsed(h => h + 1);
+          setSelected([hr, hc]);
+          return;
+        }
+      }
+    }
+  }
+}
 
 }
 
