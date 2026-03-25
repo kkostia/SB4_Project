@@ -104,14 +104,6 @@ export default function GameBoard({
     setHintsUsed(0); 
   }
 
-  function handleUndo() {
-    if (history.length === 0) return;
-    const prev = history[history.length - 1];
-    setBoard(prev);
-    setHistory((h) => h.slice(0, -1));
-    setWon(false);
-    setHint(null);
-  }
 
   // hint logic — tries Naked Single then Hidden Single
   function getHint() {
