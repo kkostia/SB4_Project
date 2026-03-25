@@ -70,10 +70,21 @@ export default function GameBoard({
     if (!challengeMode || num === solution[r][c]) playSound("correct");// sound for correct move (only when not wrong)
 
     // Checking if a move is wrong in challenge mdoe
-    if (challengeMode && num !== solution[r][c]) {
+    if (challengeMode && num !== solution[r][c] && num !== 0) {
       const newMistakes = mistakes + 1;
       playSound("wrong");
       setMistakes(newMistakes);
+
+      // Adding to mistake history
+      setMistakeHistory((prev) => [
+        ...prev,
+        {
+          row: r + 1,
+          col: c + 1,
+          entered: num,
+          correct: solution[r][c],
+        },
+      ]);
 
       if (newMistakes >= maxMistakes) {
         setTimedOut(true);
