@@ -88,6 +88,7 @@ export default function HomePage({
   soundEnabled, 
   onToggleSound,
   streak = 0,
+  onGoToLessons,
 }) {
 
   const [hovered, setHovered] = useState(null);
@@ -331,6 +332,7 @@ export default function HomePage({
       </div>
         {/* lessons entry point */}
       <button
+        onClick={onGoToLessons}
         style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "14px 18px", borderRadius: "14px", textAlign: "left",

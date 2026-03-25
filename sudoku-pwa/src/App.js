@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import HomePage from "./components/HomePage.jsx";
 import GameBoard from "./components/Game.jsx";
+import Lessons from "./components/Lessons.jsx";
 import { fetchPuzzle } from "./api/sudokuAPI.js";
 
 function App() {
@@ -80,6 +81,7 @@ function App() {
           soundEnabled={soundEnabled}
           onToggleSound={toggleSound}
           streak={streak}
+          onGoToLessons={() => setScreen("lessons")}
         />
 
         {loading && (
@@ -114,6 +116,10 @@ function App() {
         soundEnabled={soundEnabled}
       />
     );
+
+    // lessons screen
+    if (screen === "lessons")
+      return <Lessons onBack={() => setScreen("home")} />;
 }
 
 export default App;
