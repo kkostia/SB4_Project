@@ -19,6 +19,11 @@ export default function GameBoard({
   const [mistakes, setMistakes] = useState(0);
   const [paused, setPaused] = useState(false);
 
+  //hint state
+  const [hint, setHint] = useState(null);
+  const [hintsUsed, setHintsUsed] = useState(0);
+  const maxHints = 3;
+
   const maxMistakes = 5;
   const challengeMode = true;
   const isTimed = typeof timeLimit === "number" && timeLimit > 0;
@@ -52,6 +57,7 @@ export default function GameBoard({
 
   function handleNumberInput(num) {
     if (!selected || isOver || paused) return;
+    setHint(null);
     const [r, c] = selected;
     if (puzzle[r][c] !== 0) return;
 
@@ -92,7 +98,120 @@ export default function GameBoard({
     setWon(false);
     setTimedOut(false);
     setMistakes(0);
+    setHint(null);
+    setHintsUsed(0); 
   }
+
+
+  // hint logic — tries Naked Single then Hidden Single
+  function getHint() {
+    if (hintsUsed >= maxHints || isOver || paused) return;
+
+    // Helper: get all values present in a row
+    const rowVals = (r) => new Set(board[r].filter(v => v !== 0));
+    // Helper: get all values present in a column
+    const colVals = (c) => new Set(board.map(row => row[c]).filter(v => v !== 0));
+    // Helper: get all values present in a 3x3 box
+    const boxVals = (r, c) => {
+      const br = Math.floor(r / 3) * 3;
+      const bc = Math.floor(c / 3) * 3;
+      const vals = new Set();
+      for (let i = br; i < br + 3; i++)
+        for (let j = bc; j < bc + 3; j++)
+          if (board[i][j] !== 0) vals.add(board[i][j]);
+      return vals;
+    };
+    // Helper: get candidates for a cell
+    const getCandidates = (r, c) => {
+      if (board[r][c] !== 0) return [];
+      const used = new Set([...rowVals(r), ...colVals(c), ...boxVals(r, c)]);
+      return [1,2,3,4,5,6,7,8,9].filter(n => !used.has(n));
+    };
+
+    // Strategy 1: Naked Single — only one candidate for a cell
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (board[r][c] !== 0) continue;
+        const candidates = getCandidates(r, c);
+        if (candidates.length === 1) {
+          const value = candidates[0];
+          setHint({
+            row: r, col: c, value,
+            strategy: "Naked Single",
+            explanation: `This cell can only be ${value} — every other number already appears in its row, column, or box.`,
+          });
+          setHintsUsed(h => h + 1);
+          setSelected([r, c]);
+          return;
+        }
+      }
+    }
+
+    // Strategy 2: Hidden Single — a number has only one valid cell in a row/col/box
+    for (let num = 1; num <= 9; num++) {
+      // Check each row
+      for (let r = 0; r < 9; r++) {
+        const cells = [];
+        for (let c = 0; c < 9; c++)
+          if (board[r][c] === 0 && getCandidates(r, c).includes(num)) cells.push([r, c]);
+        if (cells.length === 1) {
+          const [hr, hc] = cells[0];
+          setHint({
+            row: hr, col: hc, value: num,
+            strategy: "Hidden Single",
+            explanation: `${num} must go in this cell — it's the only place in row ${hr + 1} where ${num} can legally go.`,
+          });
+          setHintsUsed(h => h + 1);
+          setSelected([hr, hc]);
+          return;
+        }
+      }
+      // Check each column
+      for (let c = 0; c < 9; c++) {
+        const cells = [];
+        for (let r = 0; r < 9; r++)
+          if (board[r][c] === 0 && getCandidates(r, c).includes(num)) cells.push([r, c]);
+        if (cells.length === 1) {
+          const [hr, hc] = cells[0];
+          setHint({
+            row: hr, col: hc, value: num,
+            strategy: "Hidden Single",
+            explanation: `${num} must go in this cell — it's the only place in column ${hc + 1} where ${num} can legally go.`,
+          });
+          setHintsUsed(h => h + 1);
+          setSelected([hr, hc]);
+          return;
+        }
+      }
+      // Check each box
+      for (let br = 0; br < 3; br++) {
+        for (let bc = 0; bc < 3; bc++) {
+          const cells = [];
+          for (let r = br * 3; r < br * 3 + 3; r++)
+            for (let c = bc * 3; c < bc * 3 + 3; c++)
+              if (board[r][c] === 0 && getCandidates(r, c).includes(num)) cells.push([r, c]);
+          if (cells.length === 1) {
+            const [hr, hc] = cells[0];
+            setHint({
+              row: hr, col: hc, value: num,
+              strategy: "Hidden Single",
+              explanation: `${num} must go in this cell — it's the only place in this 3×3 box where ${num} can legally go.`,
+            });
+            setHintsUsed(h => h + 1);
+            setSelected([hr, hc]);
+            return;
+          }
+        }
+      }
+    }
+
+  // No hint found (puzzle may need advanced strategies)
+  setHint({
+    row: null, col: null, value: null,
+    strategy: "No hint available",
+    explanation: "No beginner-level hint found. Try scanning each row and column for missing numbers.",
+  });
+}
 
   // ADDED: Web Audio sound effects
   function playSound(type) {
@@ -172,6 +291,7 @@ export default function GameBoard({
           <button
             onClick={() => {
               setWon(true);
+              playSound("win");
               onGameEnd({ difficulty: difficulty.id, elapsed: 42, won: true });
             }}
             style={{
@@ -236,9 +356,11 @@ export default function GameBoard({
                 onClick={() => handleCellClick(r, c)}
                 style={{
                   ...s.cell,
-                  background: isSelected
-                    ? "rgba(99,102,241,0.35)"
-                    : "var(--bg-surface)",
+                  background: hint && hint.row === r && hint.col === c
+                    ? "rgba(229, 251, 36, 0.35)"
+                    : isSelected
+                      ? "rgba(99,102,241,0.35)"
+                      : "var(--bg-surface)",
                   color: isWrong
                     ? "#f87171"
                     : isGiven
@@ -260,6 +382,45 @@ export default function GameBoard({
           }),
         )}
       </div>
+
+      {/* Hint banner */}
+      {hint && (
+        <div style={{
+          background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.4)",
+          borderRadius: "12px", padding: "12px 16px", marginBottom: "16px",
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+            <span style={{ fontSize: "var(--font-sm)", fontWeight: 700, color: "#fbbf24", letterSpacing: "0.1em" }}>
+              💡 {hint.strategy}
+            </span>
+            <button onClick={() => setHint(null)} style={{
+              background: "none", border: "none", color: "var(--text-muted)",
+              cursor: "pointer", fontSize: "16px", padding: "0 4px",
+            }}>✕</button>
+          </div>
+          <p style={{ margin: 0, fontSize: "var(--font-sm)", color: "var(--text-primary)", lineHeight: 1.5 }}>
+            {hint.explanation}
+          </p>
+        </div>
+      )}
+
+      {/* Hint button */}
+      {!isOver && (
+        <button
+          onClick={getHint}
+          disabled={hintsUsed >= maxHints}
+          style={{
+            width: "100%", padding: "12px", marginBottom: "12px",
+            background: hintsUsed >= maxHints ? "rgba(255,255,255,0.03)" : "rgba(251,191,36,0.1)",
+            border: `1px solid ${hintsUsed >= maxHints ? "var(--border-color)" : "rgba(251,191,36,0.4)"}`,
+            borderRadius: "10px", cursor: hintsUsed >= maxHints ? "not-allowed" : "pointer",
+            color: hintsUsed >= maxHints ? "var(--text-muted)" : "#fbbf24",
+            fontSize: "var(--font-sm)", fontWeight: 700,
+          }}
+        >
+          💡 Hint ({maxHints - hintsUsed} remaining)
+        </button>
+      )}
 
       {/* Number pad */}
       <div style={s.numpad}>
