@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import nakedSingleImg from "../assets/naked_singles_1.png";
+import hiddenSingleImg from "../assets/hidden_single_1.png";
 const LESSONS = [
   {
     id: "naked-single",
@@ -15,6 +16,20 @@ const LESSONS = [
     imgExp: "Look at cell r6c7: It is not a hidden single. Row 6 has another possible 6 in r6c4, c7" + 
             " and b6 both have another possible 6 in r5c7. But when we examine all cells that can see r6c7, " + 
             "we notice that they contain all digits except 6. 6 is therefore the last possible candidate for r6c7.",
+  },
+  {
+    id: "hidden-single",
+    title: "Hidden Single",
+    color: "#818cf8",
+    tagline: "When a number has only one home",
+    explanation: "A Hidden Single occurs when a particular number can only go in one cell within" + 
+                  " a row, column, or 3×3 box — even if that cell has multiple candidates. The number is " + 
+                  "'hidden' among other possibilities but it's the only valid placement.",
+    rule: "If a number can only fit in one cell within a row, column, or box — it must go there.",
+    img: hiddenSingleImg,
+    imgExp:"Look at cell r3c4 in the example above: The digits 4, 6, and 9 are possible according to the rule." + 
+          " If we look closely at row 3, however, we notice that in this row digit 6 can only be placed in r3c4. r3c1, " + 
+          "r3c2 and r3c3 are blocked by digit 6 in r2c3, r3c6 is blocked by digit 6 in r6c6. That means that 6 can be placed in r3c4.",
   },
 ];
 
