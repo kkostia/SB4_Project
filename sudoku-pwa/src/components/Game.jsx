@@ -12,7 +12,6 @@ export default function GameBoard({
   soundEnabled,
 }) {
   const [board, setBoard] = useState(puzzle.map((r) => [...r]));
-  const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
   const [elapsed, setElapsed] = useState(0);
   const [won, setWon] = useState(false);
