@@ -3,6 +3,7 @@ import { useState } from "react";
 import nakedSingleImg from "../assets/naked_singles_1.png";
 import hiddenSingleImg from "../assets/hidden_single_1.png";
 import nakedPairImg from "../assets/naked_pair_1.png";
+import pointingPairsImg from "../assets/pointing_pairs_1.png";
 const LESSONS = [
   {
     id: "naked-single",
@@ -45,6 +46,21 @@ const LESSONS = [
     imgExp: "cells r8c3 and r8c4 are both in the same house (row 8) and have both only candidates 3 and 9 left. " + 
         "It follows immediately that on of the cells has to be 3 and the other 9 (which is which is yet unknown). " +
         "But we can safely say that r8c2 can not be 3. The sudoku solves with singles after that.",
+  },
+  {
+    id: "pointing-pairs",
+    title: "Pointing Pairs",
+    color: "#fb7185",
+    tagline: "When a box points to a row or column",
+    explanation: "A Pointing Pair occurs when a candidate number inside a 3×3 box can only appear in cells that all" + 
+              " share the same row or column. Because that number must go somewhere in the box, and all its options are " + 
+              "in one line — it cannot appear anywhere else in that line outside the box.",
+    rule: "If a candidate only appears in one row or column within a box, eliminate it from the rest of that row or column.",
+    img: pointingPairsImg,
+    imgExp: "All the cells that might contain number 4 are located in one column. As number 4 should appear in this block at" + 
+          " least once, one of the highlighted cells will surely contain 4. Hence, we can safely eliminate all other possible" + 
+          " 4s from all the cells of this column. Remember that you can do the same trick for blocks, rows, and columns.",
+
   },
 ];
 
