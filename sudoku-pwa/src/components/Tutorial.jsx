@@ -147,7 +147,7 @@ const STRATEGIES = [
 
 // Mini Sudoku grid renderer
 function MiniBoard({ board, stepInfo, solved }) {
-  const { highlight = {}, eliminated = [], annotation } = stepInfo || {};
+  const { highlight = {}, annotation } = stepInfo || {};
 
   function isCellHighlighted(r, c) {
     if (highlight.cell) return highlight.cell[0] === r && highlight.cell[1] === c;
@@ -294,7 +294,8 @@ export default function Tutorial({ onClose, initialStrategy = null }) {
   const overlayRef = useRef(null);
 
   const strategy = STRATEGIES.find(s => s.id === activeStrategy);
-  const currentStep = strategy.steps[stepIndex];
+  const safeStepIndex = Math.min(stepIndex, strategy.steps.length - 1);
+  const currentStep = strategy.steps[safeStepIndex];
   const isLast = stepIndex === strategy.steps.length - 1;
   const isFirst = stepIndex === 0;
 
