@@ -17,9 +17,7 @@ jobs:
         node-version: '18'
         
     - name: Install dependencies
-      working-directory: ./sudoku-pwa
-      run: npm ci
+      run: cd sudoku-pwa && npm install
       
     - name: Build
-      working-directory: ./sudoku-pwa
-      run: npm run build
+      run: cd sudoku-pwa && npm run build
