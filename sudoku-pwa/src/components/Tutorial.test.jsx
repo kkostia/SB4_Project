@@ -24,4 +24,17 @@ describe("Tutorial strategy lessons", () => {
             screen.getByText(/Check digists present in its ROW/i)
         ).toBeInTheDocument();
     });
+
+    test("moves to the previous step when Prev is clicked", () => {
+        render(<Tutorial onClose={() => {}} />);
+
+        fireEvent.click(screen.getAllByRole("button", { name: /Next/i}));
+        fireEvent.click(screen.getAllByRole("button", { name: /Prev/i }));
+
+        expect(
+            screen.getByText(/Look at the highlighted cell/i)
+        ).toBeInTheDocument();
+    });
+
+    
 })
