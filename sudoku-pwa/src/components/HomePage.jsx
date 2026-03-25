@@ -329,7 +329,27 @@ export default function HomePage({
           </p>
         )}
       </div>
-
+        {/* lessons entry point */}
+      <button
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "14px 18px", borderRadius: "14px", textAlign: "left",
+          background: "rgba(129,140,248,0.08)", border: "1px solid rgba(129,140,248,0.25)",
+          cursor: "pointer", width: "100%", marginBottom: "24px", outline: "none",
+          color: "#818cf8",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span style={{ fontSize: "20px" }}>📖</span>
+          <div>
+            <p style={{ margin: 0, fontSize: "var(--font-base)", fontWeight: 700 }}>Strategy Lessons</p>
+            <p style={{ margin: "2px 0 0", fontSize: "var(--font-sm)", color: "var(--text-muted)" }}>
+              Learn Naked Singles, Hidden Singles and more
+            </p>
+          </div>
+        </div>
+        <span style={{ fontSize: "18px" }}>›</span>
+      </button>
       <div
         style={{
           fontSize: "var(--font-sm)",
