@@ -77,13 +77,13 @@ export default function GameBoard({
 
       // Adding to mistake history
       setMistakeHistory((prev) => [
-        ...prev,
         {
           row: r + 1,
           col: c + 1,
           entered: num,
           correct: solution[r][c],
         },
+        ...prev,
       ]);
 
       if (newMistakes >= maxMistakes) {
