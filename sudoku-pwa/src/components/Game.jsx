@@ -437,6 +437,55 @@ export default function GameBoard({
         </button>
       )}
 
+      {/* Mistake history */}
+<div
+  style={{
+    background: "var(--bg-surface)",
+    border: "1px solid var(--border-color)",
+    borderRadius: "12px",
+    padding: "12px",
+    marginBottom: "16px",
+  }}
+>
+  <div
+    style={{
+      fontSize: "var(--font-base)",
+      fontWeight: 700,
+      marginBottom: "8px",
+      color: "var(--text-primary)",
+    }}
+  >
+    Mistake History
+  </div>
+
+  {mistakeHistory.length === 0 ? (
+    <p
+      style={{
+        margin: 0,
+        color: "var(--text-muted)",
+        fontSize: "var(--font-sm)",
+      }}
+    >
+      No mistakes yet.
+    </p>
+  ) : (
+    <ul
+      style={{
+        margin: 0,
+        paddingLeft: "18px",
+        color: "var(--text-primary)",
+        fontSize: "var(--font-sm)",
+      }}
+    >
+      {mistakeHistory.map((mistake, index) => (
+        <li key={index} style={{ marginBottom: "6px" }}>
+          Row {mistake.row}, Col {mistake.col}: entered {mistake.entered}, correct was {mistake.correct}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
       {/* Number pad */}
       <div style={s.numpad}>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
