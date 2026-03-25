@@ -2,3 +2,11 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Tutorial from "./Tutorial";
 
+describe("Tutorial strategy lessons", () => {
+    test("renders the default strategy", () => {
+        render(<Tutorial onClose={() => {}} />);
+        expect(screen.getByText(/Naked Single/i)).toBeInTheDocument();
+    });
+
+    
+})
