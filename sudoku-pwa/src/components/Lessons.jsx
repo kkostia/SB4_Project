@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import nakedSingleImg from "../assets/naked_singles_1.png";
 import hiddenSingleImg from "../assets/hidden_single_1.png";
+import nakedPairImg from "../assets/naked_pair_1.png";
 const LESSONS = [
   {
     id: "naked-single",
@@ -30,6 +31,20 @@ const LESSONS = [
     imgExp:"Look at cell r3c4 in the example above: The digits 4, 6, and 9 are possible according to the rule." + 
           " If we look closely at row 3, however, we notice that in this row digit 6 can only be placed in r3c4. r3c1, " + 
           "r3c2 and r3c3 are blocked by digit 6 in r2c3, r3c6 is blocked by digit 6 in r6c6. That means that 6 can be placed in r3c4.",
+  },
+  {
+    id: "naked-pair",
+    title: "Naked Pair",
+    color: "#fbbf24",
+    tagline: "Two cells, two numbers — locked together",
+    explanation: "A Naked Pair occurs when exactly two cells in the same row, column, or box both have the same two candidates" + 
+              " — and only those two. Because those two numbers must go in those two cells (in some order), they can be eliminated " + 
+              "as candidates from every other cell in that group.",
+    rule: "If two cells in a group share the same two candidates, remove those candidates from all other cells in the group.",
+    img: nakedPairImg,
+    imgExp: "cells r8c3 and r8c4 are both in the same house (row 8) and have both only candidates 3 and 9 left. " + 
+        "It follows immediately that on of the cells has to be 3 and the other 9 (which is which is yet unknown). " +
+        "But we can safely say that r8c2 can not be 3. The sudoku solves with singles after that.",
   },
 ];
 
