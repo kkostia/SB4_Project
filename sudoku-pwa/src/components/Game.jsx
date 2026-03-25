@@ -19,6 +19,9 @@ export default function GameBoard({
   const [mistakes, setMistakes] = useState(0);
   const [paused, setPaused] = useState(false);
 
+  // Creating the history state to check mistake history
+  const [mistakeHistory, setMistakeHistory] = useState([]);
+
   //hint state
   const [hint, setHint] = useState(null);
   const [hintsUsed, setHintsUsed] = useState(0);
