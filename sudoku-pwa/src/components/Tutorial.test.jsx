@@ -5,7 +5,7 @@ import Tutorial from "./Tutorial";
 describe("Tutorial strategy lessons", () => {
     test("renders the default strategy", () => {
         render(<Tutorial onClose={() => {}} />);
-        expect(screen.getByText(/Naked Single/i)).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: /Naked Single/i })).toBeInTheDocument();
     });
 
     test("shows the first step by default", () => {
