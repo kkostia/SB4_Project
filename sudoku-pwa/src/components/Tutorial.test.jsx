@@ -15,5 +15,13 @@ describe("Tutorial strategy lessons", () => {
         ).toBeInTheDocument();
     });
 
-    
+    test("moves to the next step when Next is clicked", () => {
+        render(<Tutorial onClose={() => {}} />);
+
+        fireEvent.click(screen.getByRole("button", { name: /Next/i }));
+
+        expect(
+            screen.getByText(/Check digists present in its ROW/i)
+        ).toBeInTheDocument();
+    });
 })
