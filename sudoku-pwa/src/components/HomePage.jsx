@@ -1,5 +1,6 @@
 import { useState } from "react";
 import logo from "../assets/logoSUDO.svg";
+import TutorialModal from "./Tutorial";
 
 const DIFFICULTIES = [
   //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
@@ -90,7 +91,8 @@ export default function HomePage({
   streak = 0,
   achievements = [],
 }) {
-
+  
+  const [showTutorial, setShowTutorial] = useState(false);
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
 
@@ -196,6 +198,10 @@ export default function HomePage({
         >
           {largeFont ? "A−" : "A+"}
         </button>
+        {/*tutorial button */}
+        <button 
+          onClick={() => setShowTutorial(true)}>📖 Strategies</button>
+          {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
         {/*sound toggle button */}
         <button
           onClick={onToggleSound}
