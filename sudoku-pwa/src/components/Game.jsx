@@ -63,7 +63,6 @@ export default function GameBoard({
 
     const newBoard = board.map((row) => [...row]);
     newBoard[r][c] = num;
-    setHistory(h => [...h, board.map(row => [...row])]);  // ADDED BACK
     setBoard(newBoard);
     if (!challengeMode || num === solution[r][c]) playSound("correct");// sound for correct move (only when not wrong)
 
