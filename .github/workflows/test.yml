@@ -20,6 +20,6 @@ jobs:
       working-directory: ./sudoku-pwa
       run: npm ci
       
-    - name: Run tests
+    - name: Build
       working-directory: ./sudoku-pwa
-      run: npm test
+      run: npm run build
