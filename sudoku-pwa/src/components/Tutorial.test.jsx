@@ -35,6 +35,4 @@ describe("Tutorial strategy lessons", () => {
             screen.getByText(/Look at the highlighted cell/i)
         ).toBeInTheDocument();
     });
-
-    
-})
+});
