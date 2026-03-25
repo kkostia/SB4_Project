@@ -236,3 +236,49 @@ function MiniBoard({ board, stepInfo, solved }) {
     </div>
   );
 }
+// Marks
+function Marks({ eliminated }) {
+  if (!eliminated || eliminated.length === 0) return null;
+  return (
+    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "10px" }}>
+      {[1,2,3,4,5,6,7,8,9].map(n => {
+        const isOut = eliminated.includes(n);
+        return (
+          <span key={n} style={{
+            width: "28px", height: "28px",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            borderRadius: "6px",
+            fontSize: "13px", fontWeight: 700,
+            fontFamily: "'DM Mono', monospace",
+            background: isOut ? "rgba(248,113,113,0.12)" : "rgba(99,102,241,0.2)",
+            color: isOut ? "rgba(248,113,113,0.4)" : "#818cf8",
+            textDecoration: isOut ? "line-through" : "none",
+            border: `1px solid ${isOut ? "rgba(248,113,113,0.2)" : "rgba(99,102,241,0.3)"}`,
+            transition: "all 0.3s",
+          }}>
+            {n}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+// Progress dots
+function StepDots({ total, current }) {
+  return (
+    <div style={{ display: "flex", gap: "6px", justifyContent: "center", margin: "12px 0" }}>
+      {Array.from({ length: total }).map((_, i) => (
+        <div key={i} style={{
+          width: i === current ? "20px" : "8px",
+          height: "8px",
+          borderRadius: "4px",
+          background: i < current ? "#34d399"
+            : i === current ? "#818cf8"
+            : "rgba(255,255,255,0.15)",
+          transition: "all 0.3s ease",
+        }} />
+      ))}
+    </div>
+  );
+}
