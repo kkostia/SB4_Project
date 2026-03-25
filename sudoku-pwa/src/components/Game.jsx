@@ -112,6 +112,7 @@ export default function GameBoard({
     setWon(false);
     setTimedOut(false);
     setMistakes(0);
+    setMistakeHistory([]);
     setHint(null);
     setHintsUsed(0); 
   }
