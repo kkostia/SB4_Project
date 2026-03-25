@@ -12,7 +12,6 @@ export default function GameBoard({
   soundEnabled,
 }) {
   const [board, setBoard] = useState(puzzle.map((r) => [...r]));
-  const [history, setHistory] = useState([]);
   const [selected, setSelected] = useState(null);
   const [elapsed, setElapsed] = useState(0);
   const [won, setWon] = useState(false);
@@ -43,6 +42,7 @@ export default function GameBoard({
       setTimedOut(true);
       playSound("timeout");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elapsed, isTimed, timeLimit, won]);
 
   // Display value: countdown if timed, count-up if unlimited

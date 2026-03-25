@@ -1,5 +1,6 @@
 import { useState } from "react";
 import logo from "../assets/logoSUDO.svg";
+import TutorialModal from "./Tutorial";
 
 const DIFFICULTIES = [
   //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
@@ -88,8 +89,10 @@ export default function HomePage({
   soundEnabled, 
   onToggleSound,
   streak = 0,
+  achievements = [],
 }) {
-
+  
+  const [showTutorial, setShowTutorial] = useState(false);
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
 
@@ -160,6 +163,24 @@ export default function HomePage({
           <span style={{ fontSize: "14px", color: "var(--text-muted)", fontWeight: 600 }}>STREAK</span>
         </div>
 
+        {achievements.length > 0 && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            marginTop: "12px",
+            padding: "8px 12px",
+            background: "rgba(168, 85, 247, 0.1)",
+            borderRadius: "8px",
+            width: "fit-content",
+            border: "1px solid rgba(168, 85, 247, 0.3)"
+          }}>
+            <span style={{ fontSize: "20px" }}>🏆</span>
+            <span style={{ fontWeight: 800, color: "#a855f7", fontSize: "18px" }}>{achievements.length}</span>
+            <span style={{ fontSize: "14px", color: "var(--text-muted)", fontWeight: 600 }}>ACHIEVEMENTS</span>
+          </div>
+        )}
+
         <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
           <button
           onClick={onToggleFontSize}
@@ -177,6 +198,10 @@ export default function HomePage({
         >
           {largeFont ? "A−" : "A+"}
         </button>
+        {/*tutorial button */}
+        <button 
+          onClick={() => setShowTutorial(true)}>📖 Strategies</button>
+          {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
         {/*sound toggle button */}
         <button
           onClick={onToggleSound}
