@@ -88,6 +88,7 @@ export default function HomePage({
   soundEnabled, 
   onToggleSound,
   streak = 0,
+  achievements = [],
 }) {
 
   const [hovered, setHovered] = useState(null);
@@ -159,6 +160,24 @@ export default function HomePage({
           <span style={{ fontWeight: 800, color: "#fbbf24", fontSize: "18px" }}>{streak}</span>
           <span style={{ fontSize: "14px", color: "var(--text-muted)", fontWeight: 600 }}>STREAK</span>
         </div>
+
+        {achievements.length > 0 && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            marginTop: "12px",
+            padding: "8px 12px",
+            background: "rgba(168, 85, 247, 0.1)",
+            borderRadius: "8px",
+            width: "fit-content",
+            border: "1px solid rgba(168, 85, 247, 0.3)"
+          }}>
+            <span style={{ fontSize: "20px" }}>🏆</span>
+            <span style={{ fontWeight: 800, color: "#a855f7", fontSize: "18px" }}>{achievements.length}</span>
+            <span style={{ fontSize: "14px", color: "var(--text-muted)", fontWeight: 600 }}>ACHIEVEMENTS</span>
+          </div>
+        )}
 
         <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
           <button

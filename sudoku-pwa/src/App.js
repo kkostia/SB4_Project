@@ -4,6 +4,23 @@ import HomePage from "./components/HomePage.jsx";
 import GameBoard from "./components/Game.jsx";
 import { fetchPuzzle } from "./api/sudokuAPI.js";
 
+function checkAchievement(difficulty, elapsed) {
+  const thresholds = {
+    easy: { bronze: 300, silver: 180, gold: 120 },
+    medium: { bronze: 600, silver: 420, gold: 300 },
+    hard: { bronze: 900, silver: 660, gold: 480 }
+  };
+  
+  const times = thresholds[difficulty];
+  if (!times) return null;
+  
+  if (elapsed <= times.gold) return { id: `${difficulty}-gold`, name: `${difficulty} Gold`, time: times.gold };
+  if (elapsed <= times.silver) return { id: `${difficulty}-silver`, name: `${difficulty} Silver`, time: times.silver };
+  if (elapsed <= times.bronze) return { id: `${difficulty}-bronze`, name: `${difficulty} Bronze`, time: times.bronze };
+  
+  return null;
+}
+
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("sudoku-theme") || "dark");
   const [largeFont, setLargeFont] = useState(false);
@@ -48,6 +65,7 @@ function App() {
   const [error, setError] = useState(null);
   const [lastResult, setLastResult] = useState(null);
   const [streak, setStreak] = useState(() => Number(localStorage.getItem("sudoku-streak")) || 0);
+  const [achievements, setAchievements] = useState(() => JSON.parse(localStorage.getItem("sudoku-achievements")) || []);
 
 
   async function handleStartGame(diff, limit) {
@@ -79,6 +97,7 @@ function App() {
           onToggleFontSize={toggleFontSize}
           soundEnabled={soundEnabled}
           onToggleSound={toggleSound}
+          achievements={achievements}
           streak={streak}
         />
 
@@ -105,6 +124,18 @@ function App() {
             localStorage.setItem("sudoku-streak", next);
             return next;
           });
+          
+          if (result.won) {
+            const newAchievement = checkAchievement(result.difficulty, result.elapsed);
+            if (newAchievement) {
+              setAchievements(prev => {
+                const updated = [...prev, newAchievement];
+                localStorage.setItem("sudoku-achievements", JSON.stringify(updated));
+                return updated;
+              });
+            }
+          }
+          
           setScreen("home");
         }}
         onBack={() => setScreen("home")}
