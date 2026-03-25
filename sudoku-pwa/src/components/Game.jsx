@@ -19,6 +19,9 @@ export default function GameBoard({
   const [mistakes, setMistakes] = useState(0);
   const [paused, setPaused] = useState(false);
 
+  // Creating the history state to check mistake history
+  const [mistakeHistory, setMistakeHistory] = useState([]);
+
   //hint state
   const [hint, setHint] = useState(null);
   const [hintsUsed, setHintsUsed] = useState(0);
@@ -67,10 +70,21 @@ export default function GameBoard({
     if (!challengeMode || num === solution[r][c]) playSound("correct");// sound for correct move (only when not wrong)
 
     // Checking if a move is wrong in challenge mdoe
-    if (challengeMode && num !== solution[r][c]) {
+    if (challengeMode && num !== solution[r][c] && num !== 0) {
       const newMistakes = mistakes + 1;
       playSound("wrong");
       setMistakes(newMistakes);
+
+      // Adding to mistake history
+      setMistakeHistory((prev) => [
+        {
+          row: r + 1,
+          col: c + 1,
+          entered: num,
+          correct: solution[r][c],
+        },
+        ...prev,
+      ]);
 
       if (newMistakes >= maxMistakes) {
         setTimedOut(true);
@@ -98,6 +112,7 @@ export default function GameBoard({
     setWon(false);
     setTimedOut(false);
     setMistakes(0);
+    setMistakeHistory([]);
     setHint(null);
     setHintsUsed(0); 
   }
@@ -421,6 +436,55 @@ export default function GameBoard({
           💡 Hint ({maxHints - hintsUsed} remaining)
         </button>
       )}
+
+      {/* Mistake history */}
+<div
+  style={{
+    background: "var(--bg-surface)",
+    border: "1px solid var(--border-color)",
+    borderRadius: "12px",
+    padding: "12px",
+    marginBottom: "16px",
+  }}
+>
+  <div
+    style={{
+      fontSize: "var(--font-base)",
+      fontWeight: 700,
+      marginBottom: "8px",
+      color: "var(--text-primary)",
+    }}
+  >
+    Mistake History
+  </div>
+
+  {mistakeHistory.length === 0 ? (
+    <p
+      style={{
+        margin: 0,
+        color: "var(--text-muted)",
+        fontSize: "var(--font-sm)",
+      }}
+    >
+      No mistakes yet.
+    </p>
+  ) : (
+    <ul
+      style={{
+        margin: 0,
+        paddingLeft: "18px",
+        color: "var(--text-primary)",
+        fontSize: "var(--font-sm)",
+      }}
+    >
+      {mistakeHistory.map((mistake, index) => (
+        <li key={index} style={{ marginBottom: "6px" }}>
+          Row {mistake.row}, Col {mistake.col}: entered {mistake.entered}, correct was {mistake.correct}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
 
       {/* Number pad */}
       <div style={s.numpad}>
