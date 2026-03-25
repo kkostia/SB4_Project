@@ -118,7 +118,7 @@ export default function Lessons({ onBack }) {
         {/* Image Explanation */}
         <div style={s.card}>
           <p style={{ margin: 0, fontSize: "var(--font-sm)", color: "var(--text-primary)", lineHeight: 1.7 }}>
-            {lesson.imgExp}
+            {"💡" + lesson.imgExp}
           </p>
         </div>
       </div>

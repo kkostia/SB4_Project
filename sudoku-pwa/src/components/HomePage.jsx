@@ -337,7 +337,7 @@ export default function HomePage({
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "14px 18px", borderRadius: "14px", textAlign: "left",
           background: "rgba(129,140,248,0.08)", border: "1px solid rgba(129,140,248,0.25)",
-          cursor: "pointer", width: "100%", marginBottom: "24px", outline: "none",
+          cursor: "pointer", width: "100%", marginBottom: "10px", outline: "none",
           color: "#818cf8",
         }}
       >
