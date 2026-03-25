@@ -8,5 +8,12 @@ describe("Tutorial strategy lessons", () => {
         expect(screen.getByText(/Naked Single/i)).toBeInTheDocument();
     });
 
+    test("shows the first step by default", () => {
+        render(<Tutorial onClose={() => {}} />);
+        expect(
+            screen.getByText(/Look at the highlighted cell/i)
+        ).toBeInTheDocument();
+    });
+
     
 })
