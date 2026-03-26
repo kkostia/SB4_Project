@@ -282,20 +282,21 @@ export default function HomePage({
               >
                 LAST GAME
               </p>
+
               <p
                 style={{
                   margin: "4px 0 0",
                   fontSize: "15px",
                   fontWeight: 700,
-                  color: "var(--text-primary)",
+                  color: lastResult.won ? "var(--text-primary)" : "#f87171",
                 }}
               >
-                ✅{" "}
+                {lastResult.won ? "✅" : "❌"}{" "}
                 {
                   DIFFICULTIES.find((d) => d.id === lastResult.difficulty)
                     ?.label
                 }{" "}
-                solved in {timeStr}
+                {lastResult.won ? ` difficulty solved in ${timeStr}` : `difficulty lost after ${timeStr}`}
               </p>
 
               {/* Performance UI */}
