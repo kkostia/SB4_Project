@@ -78,6 +78,31 @@ function MiniGrid({ filled, color }) {
   );
 }
 
+// Adding a function to get performance stats
+function getPerformanceStats(lastResult) {
+  if (!lastResult) return null;
+
+  const results = JSON.parse(localStorage.getItem("sudoku-results") || "[]");
+
+  const sameDifficultyWins = results.filter(
+    (game) => game.difficulty === lastResult.difficulty && game.won
+  );
+
+  if (sameDifficultyWins.length === 0) return null;
+
+  const times = sameDifficultyWins.map((game) => game.elapsed);
+  const bestTime = Math.min(...times);
+  const averageTime = Math.round(
+    times.reduce((sum, time) => sum + time, 0) / times.length
+  );
+
+  return {
+    gamesPlayed: sameDifficultyWins.length,
+    bestTime,
+    averageTime,
+  };
+}
+
 export default function HomePage({
   onStartGame,
   lastResult,
