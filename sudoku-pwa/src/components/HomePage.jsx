@@ -111,12 +111,12 @@ export default function HomePage({
   onSetTheme,
   largeFont,
   onToggleFontSize,
-  soundEnabled, 
+  soundEnabled,
   onToggleSound,
   streak = 0,
   achievements = [],
 }) {
-  
+
   const [showTutorial, setShowTutorial] = useState(false);
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
@@ -146,13 +146,13 @@ export default function HomePage({
         > <img src={logo} alt="Sudoku Logo" className="logo" />
 
           <span className="title">SUDO</span>
-          
+
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
           {[
-            { id: "dark",   color: "#0a0a0f", border: "#555" },
-            { id: "light",  color: "#f3f4f6", border: "#ccc" },
-            { id: "ocean",  color: "#0c1a2e", border: "#38bdf8" },
+            { id: "dark", color: "#0a0a0f", border: "#555" },
+            { id: "light", color: "#f3f4f6", border: "#ccc" },
+            { id: "ocean", color: "#0c1a2e", border: "#38bdf8" },
             { id: "forest", color: "#0a1a0f", border: "#34d399" },
             { id: "sunset", color: "#1a0a0a", border: "#fb7185" },
             { id: "purple", color: "#0f0a1a", border: "#a78bfa" },
@@ -208,38 +208,38 @@ export default function HomePage({
 
         <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
           <button
-          onClick={onToggleFontSize}
-          aria-label="Toggle large font size"
-          style={{
-            background: "none",
-            border: "1px solid var(--border-color)",
-            borderRadius: "8px",
-            color: "var(--text-primary)",
-            padding: "8px 14px",
-            cursor: "pointer",
-            fontSize: "var(--font-base)",
-            fontWeight: 700,
-          }}
-        >
-          {largeFont ? "A−" : "A+"}
-        </button>
-        
-        {/*sound toggle button */}
-        <button
-          onClick={onToggleSound}
-          aria-label="Toggle sound"
-          style={{
-            background: "none",
-            border: "1px solid var(--border-color)",
-            borderRadius: "8px",
-            color: "var(--text-primary)",
-            padding: "8px 14px",
-            cursor: "pointer",
-            fontSize: "var(--font-base)",
-          }}
-        >
-          {soundEnabled ? "🔊" : "🔇"}
-        </button>
+            onClick={onToggleFontSize}
+            aria-label="Toggle large font size"
+            style={{
+              background: "none",
+              border: "1px solid var(--border-color)",
+              borderRadius: "8px",
+              color: "var(--text-primary)",
+              padding: "8px 14px",
+              cursor: "pointer",
+              fontSize: "var(--font-base)",
+              fontWeight: 700,
+            }}
+          >
+            {largeFont ? "A−" : "A+"}
+          </button>
+
+          {/*sound toggle button */}
+          <button
+            onClick={onToggleSound}
+            aria-label="Toggle sound"
+            style={{
+              background: "none",
+              border: "1px solid var(--border-color)",
+              borderRadius: "8px",
+              color: "var(--text-primary)",
+              padding: "8px 14px",
+              cursor: "pointer",
+              fontSize: "var(--font-base)",
+            }}
+          >
+            {soundEnabled ? "🔊" : "🔇"}
+          </button>
         </div>
         <p
           style={{
@@ -297,6 +297,38 @@ export default function HomePage({
                 }{" "}
                 solved in {timeStr}
               </p>
+
+              {/* Performance UI */}
+              {performanceStats && (
+                <div
+                  style={{
+                    marginTop: "10px",
+                    padding: "10px 12px",
+                    borderRadius: "10px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid var(--border-color)",
+                  }}
+                >
+                  <p style={{ margin: "0 0 6px", fontWeight: 700 }}>
+                    Performance Comparison
+                  </p>
+
+                  <p style={{ margin: 0 }}>
+                    Games played: {performanceStats.gamesPlayed}
+                  </p>
+
+                  <p style={{ margin: 0 }}>
+                    Best time: {Math.floor(performanceStats.bestTime / 60)}m{" "}
+                    {performanceStats.bestTime % 60}s
+                  </p>
+
+                  <p style={{ margin: 0 }}>
+                    Average time: {Math.floor(performanceStats.averageTime / 60)}m{" "}
+                    {performanceStats.averageTime % 60}s
+                  </p>
+                </div>
+              )}
+
               {nextDiff && (
                 <p
                   style={{
