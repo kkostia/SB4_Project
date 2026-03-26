@@ -173,14 +173,11 @@ function App() {
         solution={solution}
         difficulty={difficulty}
         timeLimit={timeLimit}
-        onGameEnd={(result) => {
-          saveGameResults(result);
-          setLastResult(result);
-          setStreak(prev => {
-            const next = result.won ? prev + 1 : 0;
-            localStorage.setItem("sudoku-streak", next);
-            return next;
-          });
+       onGameEnd={(result) => {
+        const performanceComparison = getPerformanceComparison(result);
+        saveGameResults(result);
+        setLastResult({...result, comparison: performanceComparison,
+  });
           
           if (result.won) {
             const newAchievement = checkAchievement(result.difficulty, result.elapsed);
