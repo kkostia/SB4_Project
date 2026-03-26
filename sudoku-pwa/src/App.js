@@ -34,6 +34,49 @@ function saveGameResults(result) {
   localStorage.setItem("sudoku-results", JSON.stringify(updatedResults));
 }
 
+// Adding a function to compare game results
+function getPerformanceComparison(currentResult) {
+  const pastResults = JSON.parse(localStorage.getItem("sudoku-results") || "[]");
+
+  const sameDifficultyWins = pastResults.filter(
+    (game) => game.difficulty === currentResult.difficulty && game.won
+  );
+
+  if (sameDifficultyWins.length === 0) {
+    return {
+      message: "This is your first completed game at this difficulty.",
+      bestTime: null,
+      averageTime: null,
+      previousTime: null,
+    };
+  }
+
+  const previousGame = sameDifficultyWins[sameDifficultyWins.length - 1];
+  const bestTime = Math.min(...sameDifficultyWins.map((game) => game.elapsed));
+  const averageTime = Math.round(
+    sameDifficultyWins.reduce((sum, game) => sum + game.elapsed, 0) / sameDifficultyWins.length
+  );
+
+  let comparisonMessage = `Your previous best time was ${bestTime}s.`;
+
+  if (currentResult.won && previousGame) {
+    if (currentResult.elapsed < previousGame.elapsed) {
+      comparisonMessage = "You improved compared to your last completed game.";
+    } else if (currentResult.elapsed > previousGame.elapsed) {
+      comparisonMessage = "You were slower than your last completed game.";
+    } else {
+      comparisonMessage = "You matched your last completed game.";
+    }
+  }
+
+  return {
+    message: comparisonMessage,
+    bestTime,
+    averageTime,
+    previousTime: previousGame.elapsed,
+  };
+}
+
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("sudoku-theme") || "dark");
   const [largeFont, setLargeFont] = useState(false);
