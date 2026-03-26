@@ -21,6 +21,19 @@ function checkAchievement(difficulty, elapsed) {
   return null;
 }
 
+// Adding a function in order to save game results
+function saveGameResults(result) {
+  const existingResults = JSON.parse(localStorage.getItem("sudoku-results") || "[]");
+
+  const newResult = {
+    ...result,
+    date: new Date().toISOString(),
+  };
+
+  const updatedResults = [...existingResults, newResult];
+  localStorage.setItem("sudoku-results", JSON.stringify(updatedResults));
+}
+
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("sudoku-theme") || "dark");
   const [largeFont, setLargeFont] = useState(false);
@@ -118,6 +131,7 @@ function App() {
         difficulty={difficulty}
         timeLimit={timeLimit}
         onGameEnd={(result) => {
+          saveGameResults(result);
           setLastResult(result);
           setStreak(prev => {
             const next = result.won ? prev + 1 : 0;
