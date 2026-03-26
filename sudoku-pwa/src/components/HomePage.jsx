@@ -261,6 +261,7 @@ export default function HomePage({
           const secs = lastResult.elapsed % 60;
           const timeStr = `${mins}m ${secs}s`;
           const nextDiff = DIFFICULTIES.find((d) => d.id === next);
+          const performanceStats = getPerformanceStats(lastResult);
 
           return (
             <div
