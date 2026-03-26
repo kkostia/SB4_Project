@@ -10,15 +10,71 @@ function checkAchievement(difficulty, elapsed) {
     medium: { bronze: 600, silver: 420, gold: 300 },
     hard: { bronze: 900, silver: 660, gold: 480 }
   };
-  
+
   const times = thresholds[difficulty];
   if (!times) return null;
-  
+
   if (elapsed <= times.gold) return { id: `${difficulty}-gold`, name: `${difficulty} Gold`, time: times.gold };
   if (elapsed <= times.silver) return { id: `${difficulty}-silver`, name: `${difficulty} Silver`, time: times.silver };
   if (elapsed <= times.bronze) return { id: `${difficulty}-bronze`, name: `${difficulty} Bronze`, time: times.bronze };
-  
+
   return null;
+}
+
+// Adding a function in order to save game results
+function saveGameResults(result) {
+  const existingResults = JSON.parse(localStorage.getItem("sudoku-results") || "[]");
+
+  const newResult = {
+    ...result,
+    date: new Date().toISOString(),
+  };
+
+  const updatedResults = [...existingResults, newResult];
+  localStorage.setItem("sudoku-results", JSON.stringify(updatedResults));
+}
+
+// Adding a function to compare game results
+function getPerformanceComparison(currentResult) {
+  const pastResults = JSON.parse(localStorage.getItem("sudoku-results") || "[]");
+
+  const sameDifficultyWins = pastResults.filter(
+    (game) => game.difficulty === currentResult.difficulty && game.won
+  );
+
+  if (sameDifficultyWins.length === 0) {
+    return {
+      message: "This is your first completed game at this difficulty.",
+      bestTime: null,
+      averageTime: null,
+      previousTime: null,
+    };
+  }
+
+  const previousGame = sameDifficultyWins[sameDifficultyWins.length - 1];
+  const bestTime = Math.min(...sameDifficultyWins.map((game) => game.elapsed));
+  const averageTime = Math.round(
+    sameDifficultyWins.reduce((sum, game) => sum + game.elapsed, 0) / sameDifficultyWins.length
+  );
+
+  let comparisonMessage = `Your previous best time was ${bestTime}s.`;
+
+  if (currentResult.won && previousGame) {
+    if (currentResult.elapsed < previousGame.elapsed) {
+      comparisonMessage = "You improved compared to your last completed game.";
+    } else if (currentResult.elapsed > previousGame.elapsed) {
+      comparisonMessage = "You were slower than your last completed game.";
+    } else {
+      comparisonMessage = "You matched your last completed game.";
+    }
+  }
+
+  return {
+    message: comparisonMessage,
+    bestTime,
+    averageTime,
+    previousTime: previousGame.elapsed,
+  };
 }
 
 function App() {
@@ -33,9 +89,9 @@ function App() {
   }, [theme]);
 
   function handleSetTheme(newTheme) {
-  setTheme(newTheme);
-  localStorage.setItem("sudoku-theme", newTheme);
-}
+    setTheme(newTheme);
+    localStorage.setItem("sudoku-theme", newTheme);
+  }
 
   useEffect(() => {
     document.documentElement.setAttribute(
@@ -118,13 +174,18 @@ function App() {
         difficulty={difficulty}
         timeLimit={timeLimit}
         onGameEnd={(result) => {
-          setLastResult(result);
-          setStreak(prev => {
+          const performanceComparison = getPerformanceComparison(result);
+          saveGameResults(result);
+          setLastResult({
+            ...result, comparison: performanceComparison,
+          });
+
+          setStreak((prev) => {
             const next = result.won ? prev + 1 : 0;
             localStorage.setItem("sudoku-streak", next);
             return next;
           });
-          
+
           if (result.won) {
             const newAchievement = checkAchievement(result.difficulty, result.elapsed);
             if (newAchievement) {
@@ -135,7 +196,7 @@ function App() {
               });
             }
           }
-          
+
           setScreen("home");
         }}
         onBack={() => setScreen("home")}

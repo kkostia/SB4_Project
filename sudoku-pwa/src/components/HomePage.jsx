@@ -78,6 +78,31 @@ function MiniGrid({ filled, color }) {
   );
 }
 
+// Adding a function to get performance stats
+function getPerformanceStats(lastResult) {
+  if (!lastResult) return null;
+
+  const results = JSON.parse(localStorage.getItem("sudoku-results") || "[]");
+
+  const sameDifficultyWins = results.filter(
+    (game) => game.difficulty === lastResult.difficulty && game.won
+  );
+
+  if (sameDifficultyWins.length === 0) return null;
+
+  const times = sameDifficultyWins.map((game) => game.elapsed);
+  const bestTime = Math.min(...times);
+  const averageTime = Math.round(
+    times.reduce((sum, time) => sum + time, 0) / times.length
+  );
+
+  return {
+    gamesPlayed: sameDifficultyWins.length,
+    bestTime,
+    averageTime,
+  };
+}
+
 export default function HomePage({
   onStartGame,
   lastResult,
@@ -86,12 +111,12 @@ export default function HomePage({
   onSetTheme,
   largeFont,
   onToggleFontSize,
-  soundEnabled, 
+  soundEnabled,
   onToggleSound,
   streak = 0,
   achievements = [],
 }) {
-  
+
   const [showTutorial, setShowTutorial] = useState(false);
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
@@ -121,13 +146,13 @@ export default function HomePage({
         > <img src={logo} alt="Sudoku Logo" className="logo" />
 
           <span className="title">SUDO</span>
-          
+
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
           {[
-            { id: "dark",   color: "#0a0a0f", border: "#555" },
-            { id: "light",  color: "#f3f4f6", border: "#ccc" },
-            { id: "ocean",  color: "#0c1a2e", border: "#38bdf8" },
+            { id: "dark", color: "#0a0a0f", border: "#555" },
+            { id: "light", color: "#f3f4f6", border: "#ccc" },
+            { id: "ocean", color: "#0c1a2e", border: "#38bdf8" },
             { id: "forest", color: "#0a1a0f", border: "#34d399" },
             { id: "sunset", color: "#1a0a0a", border: "#fb7185" },
             { id: "purple", color: "#0f0a1a", border: "#a78bfa" },
@@ -183,38 +208,38 @@ export default function HomePage({
 
         <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
           <button
-          onClick={onToggleFontSize}
-          aria-label="Toggle large font size"
-          style={{
-            background: "none",
-            border: "1px solid var(--border-color)",
-            borderRadius: "8px",
-            color: "var(--text-primary)",
-            padding: "8px 14px",
-            cursor: "pointer",
-            fontSize: "var(--font-base)",
-            fontWeight: 700,
-          }}
-        >
-          {largeFont ? "A−" : "A+"}
-        </button>
-        
-        {/*sound toggle button */}
-        <button
-          onClick={onToggleSound}
-          aria-label="Toggle sound"
-          style={{
-            background: "none",
-            border: "1px solid var(--border-color)",
-            borderRadius: "8px",
-            color: "var(--text-primary)",
-            padding: "8px 14px",
-            cursor: "pointer",
-            fontSize: "var(--font-base)",
-          }}
-        >
-          {soundEnabled ? "🔊" : "🔇"}
-        </button>
+            onClick={onToggleFontSize}
+            aria-label="Toggle large font size"
+            style={{
+              background: "none",
+              border: "1px solid var(--border-color)",
+              borderRadius: "8px",
+              color: "var(--text-primary)",
+              padding: "8px 14px",
+              cursor: "pointer",
+              fontSize: "var(--font-base)",
+              fontWeight: 700,
+            }}
+          >
+            {largeFont ? "A−" : "A+"}
+          </button>
+
+          {/*sound toggle button */}
+          <button
+            onClick={onToggleSound}
+            aria-label="Toggle sound"
+            style={{
+              background: "none",
+              border: "1px solid var(--border-color)",
+              borderRadius: "8px",
+              color: "var(--text-primary)",
+              padding: "8px 14px",
+              cursor: "pointer",
+              fontSize: "var(--font-base)",
+            }}
+          >
+            {soundEnabled ? "🔊" : "🔇"}
+          </button>
         </div>
         <p
           style={{
@@ -236,6 +261,7 @@ export default function HomePage({
           const secs = lastResult.elapsed % 60;
           const timeStr = `${mins}m ${secs}s`;
           const nextDiff = DIFFICULTIES.find((d) => d.id === next);
+          const performanceStats = getPerformanceStats(lastResult);
 
           return (
             <div
@@ -256,21 +282,54 @@ export default function HomePage({
               >
                 LAST GAME
               </p>
+
               <p
                 style={{
                   margin: "4px 0 0",
                   fontSize: "15px",
                   fontWeight: 700,
-                  color: "var(--text-primary)",
+                  color: lastResult.won ? "var(--text-primary)" : "#f87171",
                 }}
               >
-                ✅{" "}
+                {lastResult.won ? "✅" : "❌"}{" "}
                 {
                   DIFFICULTIES.find((d) => d.id === lastResult.difficulty)
                     ?.label
                 }{" "}
-                solved in {timeStr}
+                {lastResult.won ? ` difficulty solved in ${timeStr}` : `difficulty lost after ${timeStr}`}
               </p>
+
+              {/* Performance UI */}
+              {performanceStats && (
+                <div
+                  style={{
+                    marginTop: "10px",
+                    padding: "10px 12px",
+                    borderRadius: "10px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid var(--border-color)",
+                  }}
+                >
+                  <p style={{ margin: "0 0 6px", fontWeight: 700 }}>
+                    Performance Comparison
+                  </p>
+
+                  <p style={{ margin: 0 }}>
+                    Games played: {performanceStats.gamesPlayed}
+                  </p>
+
+                  <p style={{ margin: 0 }}>
+                    Best time: {Math.floor(performanceStats.bestTime / 60)}m{" "}
+                    {performanceStats.bestTime % 60}s
+                  </p>
+
+                  <p style={{ margin: 0 }}>
+                    Average time: {Math.floor(performanceStats.averageTime / 60)}m{" "}
+                    {performanceStats.averageTime % 60}s
+                  </p>
+                </div>
+              )}
+
               {nextDiff && (
                 <p
                   style={{
