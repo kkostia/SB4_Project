@@ -10,14 +10,14 @@ function checkAchievement(difficulty, elapsed) {
     medium: { bronze: 600, silver: 420, gold: 300 },
     hard: { bronze: 900, silver: 660, gold: 480 }
   };
-  
+
   const times = thresholds[difficulty];
   if (!times) return null;
-  
+
   if (elapsed <= times.gold) return { id: `${difficulty}-gold`, name: `${difficulty} Gold`, time: times.gold };
   if (elapsed <= times.silver) return { id: `${difficulty}-silver`, name: `${difficulty} Silver`, time: times.silver };
   if (elapsed <= times.bronze) return { id: `${difficulty}-bronze`, name: `${difficulty} Bronze`, time: times.bronze };
-  
+
   return null;
 }
 
@@ -89,9 +89,9 @@ function App() {
   }, [theme]);
 
   function handleSetTheme(newTheme) {
-  setTheme(newTheme);
-  localStorage.setItem("sudoku-theme", newTheme);
-}
+    setTheme(newTheme);
+    localStorage.setItem("sudoku-theme", newTheme);
+  }
 
   useEffect(() => {
     document.documentElement.setAttribute(
@@ -173,12 +173,19 @@ function App() {
         solution={solution}
         difficulty={difficulty}
         timeLimit={timeLimit}
-       onGameEnd={(result) => {
-        const performanceComparison = getPerformanceComparison(result);
-        saveGameResults(result);
-        setLastResult({...result, comparison: performanceComparison,
-  });
-          
+        onGameEnd={(result) => {
+          const performanceComparison = getPerformanceComparison(result);
+          saveGameResults(result);
+          setLastResult({
+            ...result, comparison: performanceComparison,
+          });
+
+          setStreak((prev) => {
+            const next = result.won ? prev + 1 : 0;
+            localStorage.setItem("sudoku-streak", next);
+            return next;
+          });
+
           if (result.won) {
             const newAchievement = checkAchievement(result.difficulty, result.elapsed);
             if (newAchievement) {
@@ -189,7 +196,7 @@ function App() {
               });
             }
           }
-          
+
           setScreen("home");
         }}
         onBack={() => setScreen("home")}
