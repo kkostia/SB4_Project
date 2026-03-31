@@ -25,7 +25,11 @@ export default function GameBoard({
   //hint state
   const [hint, setHint] = useState(null);
   const [hintsUsed, setHintsUsed] = useState(0);
-  const maxHints = 3;
+  
+  // starting hints depend on difficulty
+  const HINTS_BY_DIFFICULTY = { easy: 5, medium: 3, hard: 1, adaptive: 2 };
+  const initialMaxHints = HINTS_BY_DIFFICULTY[difficulty.id] ?? 3;
+  const [maxHints, setMaxHints] = useState(initialMaxHints);
 
   const maxMistakes = 5;
   const challengeMode = true;
