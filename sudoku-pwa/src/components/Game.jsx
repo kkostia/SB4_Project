@@ -25,7 +25,11 @@ export default function GameBoard({
   //hint state
   const [hint, setHint] = useState(null);
   const [hintsUsed, setHintsUsed] = useState(0);
-  const maxHints = 3;
+
+  // starting hints depend on difficulty
+  const HINTS_BY_DIFFICULTY = { easy: 5, medium: 3, hard: 1, adaptive: 2 };
+  const initialMaxHints = HINTS_BY_DIFFICULTY[difficulty.id] ?? 3;
+  const [maxHints, setMaxHints] = useState(initialMaxHints);
 
   const maxMistakes = 5;
   const challengeMode = true;
@@ -38,6 +42,16 @@ export default function GameBoard({
     const t = setInterval(() => setElapsed((s) => s + 1), 1000);
     return () => clearInterval(t);
   }, [isOver, paused]);
+
+  // reduce available hints by 1 every 3 minutes to encourage independence
+  useEffect(() => {
+    if (isOver || paused) return;
+    const reductions = Math.floor(elapsed / 180); // 180 seconds = 3 minutes
+    const newMax = Math.max(0, initialMaxHints - reductions);
+    if (newMax < maxHints) {
+      setMaxHints(newMax);
+    }
+  }, [elapsed, isOver, paused, initialMaxHints, maxHints]);
 
   // Timeout check: when elapsed reaches timeLimit, trigger timeout
   useEffect(() => {
@@ -114,7 +128,8 @@ export default function GameBoard({
     setMistakes(0);
     setMistakeHistory([]);
     setHint(null);
-    setHintsUsed(0); 
+    setHintsUsed(0);
+    setMaxHints(initialMaxHints);  // reset adaptive cap on restart
   }
 
 
@@ -433,7 +448,12 @@ export default function GameBoard({
             fontSize: "var(--font-sm)", fontWeight: 700,
           }}
         >
-          💡 Hint ({maxHints - hintsUsed} remaining)
+          💡 Hint ({Math.max(0, maxHints - hintsUsed)} remaining)
+          {maxHints < initialMaxHints && (
+            <span style={{ fontSize: "11px", opacity: 0.6, marginLeft: "6px" }}>
+              (reduced from {initialMaxHints} — keep going!)
+            </span>
+          )}
         </button>
       )}
 
