@@ -128,7 +128,8 @@ export default function GameBoard({
     setMistakes(0);
     setMistakeHistory([]);
     setHint(null);
-    setHintsUsed(0); 
+    setHintsUsed(0);
+    setMaxHints(initialMaxHints);  // reset adaptive cap on restart
   }
 
 
@@ -447,7 +448,12 @@ export default function GameBoard({
             fontSize: "var(--font-sm)", fontWeight: 700,
           }}
         >
-          💡 Hint ({maxHints - hintsUsed} remaining)
+          💡 Hint ({Math.max(0, maxHints - hintsUsed)} remaining)
+          {maxHints < initialMaxHints && (
+            <span style={{ fontSize: "11px", opacity: 0.6, marginLeft: "6px" }}>
+              (reduced from {initialMaxHints} — keep going!)
+            </span>
+          )}
         </button>
       )}
 
