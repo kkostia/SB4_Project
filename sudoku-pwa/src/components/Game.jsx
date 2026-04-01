@@ -144,6 +144,13 @@ export default function GameBoard({
     if (hintLevel === 1) { setHintLevel(2); return; }
     if (hintLevel === 2) { setHintLevel(3); return; }
 
+    // If we are at level 3 and click again, reset to level 0 so we can try to buy a new hint
+    if (hintLevel === 3) {
+      setHintLevel(0);
+      setHint(null);
+      // Allow the function to continue to the "Level 0->1" logic below
+    }
+
     // Level 0→1: compute hint and cost 1 hint
     if (hintsUsed >= maxHints) return;
 
@@ -470,13 +477,26 @@ export default function GameBoard({
       {!isOver && (
         <button
           onClick={getHint}
-          disabled={hintsUsed >= maxHints && hintLevel === 0}
+          disabled={hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)}
           style={{
             width: "100%", padding: "12px", marginBottom: "12px",
-            background: hintsUsed >= maxHints ? "rgba(255,255,255,0.03)" : "rgba(251,191,36,0.1)",
-            border: `1px solid ${hintsUsed >= maxHints ? "var(--border-color)" : "rgba(251,191,36,0.4)"}`,
-            borderRadius: "10px", cursor: hintsUsed >= maxHints ? "not-allowed" : "pointer",
-            color: hintsUsed >= maxHints ? "var(--text-muted)" : "#fbbf24",
+            // Logic for background color
+            background: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
+              ? "rgba(255,255,255,0.03)" 
+              : "rgba(251,191,36,0.1)",
+            // Logic for border color
+            border: `1px solid ${(hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
+              ? "var(--border-color)" 
+              : "rgba(251,191,36,0.4)"}`,
+            borderRadius: "10px", 
+            // Logic for cursor
+            cursor: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
+              ? "not-allowed" 
+              : "pointer",
+            // Logic for text color
+            color: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
+              ? "var(--text-muted)" 
+              : "#fbbf24",
             fontSize: "var(--font-sm)", fontWeight: 700,
           }}
         >
