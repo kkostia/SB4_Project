@@ -470,7 +470,7 @@ export default function GameBoard({
       {!isOver && (
         <button
           onClick={getHint}
-          disabled={hintsUsed >= maxHints}
+          disabled={hintsUsed >= maxHints && hintLevel === 0}
           style={{
             width: "100%", padding: "12px", marginBottom: "12px",
             background: hintsUsed >= maxHints ? "rgba(255,255,255,0.03)" : "rgba(251,191,36,0.1)",
@@ -480,7 +480,10 @@ export default function GameBoard({
             fontSize: "var(--font-sm)", fontWeight: 700,
           }}
         >
-          💡 Hint ({Math.max(0, maxHints - hintsUsed)} remaining)
+          {hintLevel === 0 && `💡 Get a hint (${Math.max(0, maxHints - hintsUsed)} remaining)`}
+          {hintLevel === 1 && "💡 Show me why →"}
+          {hintLevel === 2 && "💡 Show me the answer →"}
+          {hintLevel === 3 && `💡 New hint (${Math.max(0, maxHints - hintsUsed)} remaining)`}
           {maxHints < initialMaxHints && (
             <span style={{ fontSize: "11px", opacity: 0.6, marginLeft: "6px" }}>
               (reduced from {initialMaxHints} — keep going!)
