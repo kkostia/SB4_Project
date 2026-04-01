@@ -24,6 +24,7 @@ export default function GameBoard({
 
   //hint state
   const [hint, setHint] = useState(null);
+  const [hintLevel, setHintLevel] = useState(0); // 0=none 1=cell 2=strategy 3=answer
   const [hintsUsed, setHintsUsed] = useState(0);
 
   // starting hints depend on difficulty
@@ -135,7 +136,14 @@ export default function GameBoard({
 
   // hint logic — tries Naked Single then Hidden Single
   function getHint() {
-    if (hintsUsed >= maxHints || isOver || paused) return;
+    if (isOver || paused) return;
+
+    // Levels 2 and 3 are free — just advance the level
+    if (hintLevel === 1) { setHintLevel(2); return; }
+    if (hintLevel === 2) { setHintLevel(3); return; }
+
+    // Level 0→1: compute hint and cost 1 hint
+    if (hintsUsed >= maxHints) return;
 
     // Helper: get all values present in a row
     const rowVals = (r) => new Set(board[r].filter(v => v !== 0));
@@ -168,8 +176,9 @@ export default function GameBoard({
           setHint({
             row: r, col: c, value,
             strategy: "Naked Single",
-            explanation: `This cell can only be ${value} — every other number already appears in its row, column, or box.`,
+            explanation: `This cell can only be ${candidates[0]} — every other number already appears in its row, column, or box.`,
           });
+          setHintLevel(1);
           setHintsUsed(h => h + 1);
           setSelected([r, c]);
           return;
@@ -191,6 +200,7 @@ export default function GameBoard({
             strategy: "Hidden Single",
             explanation: `${num} must go in this cell — it's the only place in row ${hr + 1} where ${num} can legally go.`,
           });
+          setHintLevel(1);
           setHintsUsed(h => h + 1);
           setSelected([hr, hc]);
           return;
@@ -208,6 +218,7 @@ export default function GameBoard({
             strategy: "Hidden Single",
             explanation: `${num} must go in this cell — it's the only place in column ${hc + 1} where ${num} can legally go.`,
           });
+          setHintLevel(1);
           setHintsUsed(h => h + 1);
           setSelected([hr, hc]);
           return;
@@ -227,6 +238,7 @@ export default function GameBoard({
               strategy: "Hidden Single",
               explanation: `${num} must go in this cell — it's the only place in this 3×3 box where ${num} can legally go.`,
             });
+            setHintLevel(1);
             setHintsUsed(h => h + 1);
             setSelected([hr, hc]);
             return;
@@ -235,13 +247,13 @@ export default function GameBoard({
       }
     }
 
-  // No hint found (puzzle may need advanced strategies)
-  setHint({
-    row: null, col: null, value: null,
-    strategy: "No hint available",
-    explanation: "No beginner-level hint found. Try scanning each row and column for missing numbers.",
-  });
-}
+    // No hint found (puzzle may need advanced strategies)
+    setHint({
+      row: null, col: null, value: null,
+      strategy: "No hint available",
+      explanation: "No beginner-level hint found. Try scanning each row and column for missing numbers."});
+      setHintLevel(1);
+  }
 
   // ADDED: Web Audio sound effects
   function playSound(type) {
