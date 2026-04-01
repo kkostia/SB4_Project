@@ -24,6 +24,7 @@ export default function GameBoard({
 
   //hint state
   const [hint, setHint] = useState(null);
+  const [hintLevel, setHintLevel] = useState(0); // 0=none 1=cell 2=strategy 3=answer
   const [hintsUsed, setHintsUsed] = useState(0);
 
   // starting hints depend on difficulty
@@ -75,6 +76,7 @@ export default function GameBoard({
   function handleNumberInput(num) {
     if (!selected || isOver || paused) return;
     setHint(null);
+    setHintLevel(0); // reset progressive hint on new input
     const [r, c] = selected;
     if (puzzle[r][c] !== 0) return;
 
@@ -128,6 +130,7 @@ export default function GameBoard({
     setMistakes(0);
     setMistakeHistory([]);
     setHint(null);
+    setHintLevel(0);
     setHintsUsed(0);
     setMaxHints(initialMaxHints);  // reset adaptive cap on restart
   }
@@ -135,7 +138,21 @@ export default function GameBoard({
 
   // hint logic — tries Naked Single then Hidden Single
   function getHint() {
-    if (hintsUsed >= maxHints || isOver || paused) return;
+    if (isOver || paused) return;
+
+    // Levels 2 and 3 are free — just advance the level
+    if (hintLevel === 1) { setHintLevel(2); return; }
+    if (hintLevel === 2) { setHintLevel(3); return; }
+
+    // If we are at level 3 and click again, reset to level 0 so we can try to buy a new hint
+    if (hintLevel === 3) {
+      setHintLevel(0);
+      setHint(null);
+      // Allow the function to continue to the "Level 0->1" logic below
+    }
+
+    // Level 0→1: compute hint and cost 1 hint
+    if (hintsUsed >= maxHints) return;
 
     // Helper: get all values present in a row
     const rowVals = (r) => new Set(board[r].filter(v => v !== 0));
@@ -168,8 +185,9 @@ export default function GameBoard({
           setHint({
             row: r, col: c, value,
             strategy: "Naked Single",
-            explanation: `This cell can only be ${value} — every other number already appears in its row, column, or box.`,
+            explanation: `This cell can only be ${candidates[0]} — every other number already appears in its row, column, or box.`,
           });
+          setHintLevel(1);
           setHintsUsed(h => h + 1);
           setSelected([r, c]);
           return;
@@ -191,6 +209,7 @@ export default function GameBoard({
             strategy: "Hidden Single",
             explanation: `${num} must go in this cell — it's the only place in row ${hr + 1} where ${num} can legally go.`,
           });
+          setHintLevel(1);
           setHintsUsed(h => h + 1);
           setSelected([hr, hc]);
           return;
@@ -208,6 +227,7 @@ export default function GameBoard({
             strategy: "Hidden Single",
             explanation: `${num} must go in this cell — it's the only place in column ${hc + 1} where ${num} can legally go.`,
           });
+          setHintLevel(1);
           setHintsUsed(h => h + 1);
           setSelected([hr, hc]);
           return;
@@ -227,6 +247,7 @@ export default function GameBoard({
               strategy: "Hidden Single",
               explanation: `${num} must go in this cell — it's the only place in this 3×3 box where ${num} can legally go.`,
             });
+            setHintLevel(1);
             setHintsUsed(h => h + 1);
             setSelected([hr, hc]);
             return;
@@ -235,13 +256,13 @@ export default function GameBoard({
       }
     }
 
-  // No hint found (puzzle may need advanced strategies)
-  setHint({
-    row: null, col: null, value: null,
-    strategy: "No hint available",
-    explanation: "No beginner-level hint found. Try scanning each row and column for missing numbers.",
-  });
-}
+    // No hint found (puzzle may need advanced strategies)
+    setHint({
+      row: null, col: null, value: null,
+      strategy: "No hint available",
+      explanation: "No beginner-level hint found. Try scanning each row and column for missing numbers."});
+      setHintLevel(1);
+  }
 
   // ADDED: Web Audio sound effects
   function playSound(type) {
@@ -413,24 +434,42 @@ export default function GameBoard({
         )}
       </div>
 
-      {/* Hint banner */}
-      {hint && (
+     {/* Progressive Hint banner */}
+      {hint && hintLevel >= 1 && (
         <div style={{
           background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.4)",
           borderRadius: "12px", padding: "12px 16px", marginBottom: "16px",
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
             <span style={{ fontSize: "var(--font-sm)", fontWeight: 700, color: "#fbbf24", letterSpacing: "0.1em" }}>
-              💡 {hint.strategy}
+              {hintLevel === 1 ? "💡 Check the highlighted cell" : `💡 ${hint.strategy}`}
             </span>
-            <button onClick={() => setHint(null)} style={{
+            <button onClick={() => { setHint(null); setHintLevel(0); }} style={{
               background: "none", border: "none", color: "var(--text-muted)",
               cursor: "pointer", fontSize: "16px", padding: "0 4px",
             }}>✕</button>
           </div>
-          <p style={{ margin: 0, fontSize: "var(--font-sm)", color: "var(--text-primary)", lineHeight: 1.5 }}>
-            {hint.explanation}
-          </p>
+
+          {/* Level 1: cell highlighted only — just a nudge */}
+          {hintLevel === 1 && (
+            <p style={{ margin: 0, fontSize: "var(--font-sm)", color: "var(--text-primary)", lineHeight: 1.5 }}>
+              A cell has been highlighted. Try to figure out the value yourself first!
+            </p>
+          )}
+
+          {/* Level 2: show strategy + explanation but not the value */}
+          {hintLevel >= 2 && (
+            <p style={{ margin: 0, fontSize: "var(--font-sm)", color: "var(--text-primary)", lineHeight: 1.5 }}>
+              {hint.explanation}
+            </p>
+          )}
+
+          {/* Level 3: reveal the answer */}
+          {hintLevel === 3 && hint.value && (
+            <p style={{ margin: "8px 0 0", fontSize: "var(--font-sm)", fontWeight: 700, color: "#fbbf24" }}>
+              Answer: {hint.value}
+            </p>
+          )}
         </div>
       )}
 
@@ -438,17 +477,33 @@ export default function GameBoard({
       {!isOver && (
         <button
           onClick={getHint}
-          disabled={hintsUsed >= maxHints}
+          disabled={hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)}
           style={{
             width: "100%", padding: "12px", marginBottom: "12px",
-            background: hintsUsed >= maxHints ? "rgba(255,255,255,0.03)" : "rgba(251,191,36,0.1)",
-            border: `1px solid ${hintsUsed >= maxHints ? "var(--border-color)" : "rgba(251,191,36,0.4)"}`,
-            borderRadius: "10px", cursor: hintsUsed >= maxHints ? "not-allowed" : "pointer",
-            color: hintsUsed >= maxHints ? "var(--text-muted)" : "#fbbf24",
+            // Logic for background color
+            background: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
+              ? "rgba(255,255,255,0.03)" 
+              : "rgba(251,191,36,0.1)",
+            // Logic for border color
+            border: `1px solid ${(hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
+              ? "var(--border-color)" 
+              : "rgba(251,191,36,0.4)"}`,
+            borderRadius: "10px", 
+            // Logic for cursor
+            cursor: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
+              ? "not-allowed" 
+              : "pointer",
+            // Logic for text color
+            color: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
+              ? "var(--text-muted)" 
+              : "#fbbf24",
             fontSize: "var(--font-sm)", fontWeight: 700,
           }}
         >
-          💡 Hint ({Math.max(0, maxHints - hintsUsed)} remaining)
+          {hintLevel === 0 && `💡 Get a hint (${Math.max(0, maxHints - hintsUsed)} remaining)`}
+          {hintLevel === 1 && "💡 Show me why →"}
+          {hintLevel === 2 && "💡 Show me the answer →"}
+          {hintLevel === 3 && `💡 New hint (${Math.max(0, maxHints - hintsUsed)} remaining)`}
           {maxHints < initialMaxHints && (
             <span style={{ fontSize: "11px", opacity: 0.6, marginLeft: "6px" }}>
               (reduced from {initialMaxHints} — keep going!)
