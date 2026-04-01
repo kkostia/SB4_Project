@@ -76,6 +76,7 @@ export default function GameBoard({
   function handleNumberInput(num) {
     if (!selected || isOver || paused) return;
     setHint(null);
+    setHintLevel(0); // reset progressive hint on new input
     const [r, c] = selected;
     if (puzzle[r][c] !== 0) return;
 
@@ -129,6 +130,7 @@ export default function GameBoard({
     setMistakes(0);
     setMistakeHistory([]);
     setHint(null);
+    setHintLevel(0);
     setHintsUsed(0);
     setMaxHints(initialMaxHints);  // reset adaptive cap on restart
   }
@@ -425,24 +427,42 @@ export default function GameBoard({
         )}
       </div>
 
-      {/* Hint banner */}
-      {hint && (
+     {/* Progressive Hint banner */}
+      {hint && hintLevel >= 1 && (
         <div style={{
           background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.4)",
           borderRadius: "12px", padding: "12px 16px", marginBottom: "16px",
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
             <span style={{ fontSize: "var(--font-sm)", fontWeight: 700, color: "#fbbf24", letterSpacing: "0.1em" }}>
-              💡 {hint.strategy}
+              {hintLevel === 1 ? "💡 Check the highlighted cell" : `💡 ${hint.strategy}`}
             </span>
-            <button onClick={() => setHint(null)} style={{
+            <button onClick={() => { setHint(null); setHintLevel(0); }} style={{
               background: "none", border: "none", color: "var(--text-muted)",
               cursor: "pointer", fontSize: "16px", padding: "0 4px",
             }}>✕</button>
           </div>
-          <p style={{ margin: 0, fontSize: "var(--font-sm)", color: "var(--text-primary)", lineHeight: 1.5 }}>
-            {hint.explanation}
-          </p>
+
+          {/* Level 1: cell highlighted only — just a nudge */}
+          {hintLevel === 1 && (
+            <p style={{ margin: 0, fontSize: "var(--font-sm)", color: "var(--text-primary)", lineHeight: 1.5 }}>
+              A cell has been highlighted. Try to figure out the value yourself first!
+            </p>
+          )}
+
+          {/* Level 2: show strategy + explanation but not the value */}
+          {hintLevel >= 2 && (
+            <p style={{ margin: 0, fontSize: "var(--font-sm)", color: "var(--text-primary)", lineHeight: 1.5 }}>
+              {hint.explanation}
+            </p>
+          )}
+
+          {/* Level 3: reveal the answer */}
+          {hintLevel === 3 && hint.value && (
+            <p style={{ margin: "8px 0 0", fontSize: "var(--font-sm)", fontWeight: 700, color: "#fbbf24" }}>
+              Answer: {hint.value}
+            </p>
+          )}
         </div>
       )}
 
