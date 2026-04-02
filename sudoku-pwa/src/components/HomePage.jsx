@@ -9,7 +9,7 @@ function hasPlayedToday() {
   return localStorage.getItem("sudoku-last-played") === getToday();
 }
 export function markPlayedToday() {
-  localStorage.setItem("sudoku-last-played", getTodayKey());
+  localStorage.setItem("sudoku-last-played", getToday());
 }
 async function requestNotificationPermission() {
   if (!("Notification" in window)) return "unsupported";
@@ -22,6 +22,11 @@ function scheduleDailyReminder(hourLocal = 9) {
   localStorage.setItem("sudoku-reminder-enabled", "true");
   localStorage.setItem("sudoku-reminder-hour", String(hourLocal));
 }
+function cancelDailyReminder() {
+  localStorage.removeItem("sudoku-reminder-enabled");
+  localStorage.removeItem("sudoku-reminder-hour");
+}
+
 const DIFFICULTIES = [
   //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
   {
