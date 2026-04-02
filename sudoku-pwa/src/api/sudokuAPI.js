@@ -5,7 +5,7 @@ function parseGrid(data) {
   );
 }
 
-export async function fetchPuzzle(difficulty) {
+export async function fetchPuzzle(difficulty, seed) {
   const response = await fetch("/api", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
