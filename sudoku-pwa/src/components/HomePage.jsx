@@ -11,7 +11,13 @@ function hasPlayedToday() {
 export function markPlayedToday() {
   localStorage.setItem("sudoku-last-played", getTodayKey());
 }
-
+async function requestNotificationPermission() {
+  if (!("Notification" in window)) return "unsupported";
+  if (Notification.permission === "granted") return "granted";
+  if (Notification.permission === "denied") return "denied";
+  const result = await Notification.requestPermission();
+  return result;
+}
 const DIFFICULTIES = [
   //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
   {
