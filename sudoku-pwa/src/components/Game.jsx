@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { checkWin } from "../api/sudokuAPI";
+import { markPlayedToday } from "./HomePage";
 
 export default function GameBoard({
   puzzle,
@@ -37,6 +38,10 @@ export default function GameBoard({
   const isTimed = typeof timeLimit === "number" && timeLimit > 0;
   const isOver = won || timedOut;
 
+  useEffect(() => {
+    markPlayedToday();
+  }, []);
+  
   // Single simple timer: always counts elapsed seconds up
   useEffect(() => {
     if (isOver || paused) return;
