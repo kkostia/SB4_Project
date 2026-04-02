@@ -719,11 +719,12 @@ export default function HomePage({
       <div className="start-menu" style={{ marginTop: "30px" }}>
         <button
           onClick={() => {
+            if (hasPlayedToday()) return;
             const difficulties = ["easy", "medium", "hard"];
             const chosen = difficulties[Math.floor(Math.random() * difficulties.length)];
 
             const diffObj = DIFFICULTIES.find(d => d.id === chosen);
-
+            markPlayedToday();
             onStartGame(diffObj, selectedTime.seconds, { daily: true });
           }}
           style={{
@@ -734,10 +735,11 @@ export default function HomePage({
             border: "1px solid rgba(129,140,248,0.25)",
             cursor: "pointer",
             fontWeight: 700,
-            fontSize: "var(--font-base)"
+            fontSize: "var(--font-base)",
+            color: "var(--text-primary)"
           }}
         >
-          Start Daily Challenge
+          {hasPlayedToday() ? "Daily Challenge Completed" : "Start Daily Challenge"}
         </button>
       </div>
     </div>
