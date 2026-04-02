@@ -58,6 +58,19 @@ const REMINDER_HOURS = [
   { label: "6 PM", value: 18 },
   { label: "9 PM", value: 21 },
 ];
+// Daily challenge 
+function getDailySeed() {
+  return new Date().toISOString().slice(0, 10); // same per day
+}
+
+// deterministic pseudo-random from date
+function seededRandom(seed) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  return Math.abs(h);
+}
 const DIFFICULTIES = [
   //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
   {
