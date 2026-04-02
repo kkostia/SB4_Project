@@ -1,6 +1,10 @@
 import { useState } from "react";
 import logo from "../assets/logoSUDO.svg";
 import TutorialModal from "./Tutorial";
+//Daily notifications
+function getToday() {
+  return new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+}
 
 const DIFFICULTIES = [
   //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
