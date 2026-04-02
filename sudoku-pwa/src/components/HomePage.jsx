@@ -62,8 +62,6 @@ const REMINDER_HOURS = [
 function getDailySeed() {
   return new Date().toISOString().slice(0, 10); // same per day
 }
-
-// deterministic pseudo-random from date
 function seededRandom(seed) {
   let h = 0;
   for (let i = 0; i < seed.length; i++) {
@@ -642,7 +640,45 @@ export default function HomePage({
         <span style={{ fontSize: "18px" }}>›</span>
       </button>
       {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
+      <div style={{ marginTop: "30px" }}>
+        <div
+          style={{
+            fontSize: "var(--font-sm)",
+            color: "var(--text-muted)",
+            letterSpacing: "0.2em",
+            marginBottom: "12px",
+          }}
+        >
+          DAILY CHALLENGE
+        </div>
 
+        <button
+          onClick={() => {
+            const seed = getDailySeed();
+            const rand = seededRandom(seed);
+
+            const difficulties = ["easy", "medium", "hard"];
+            const chosen = difficulties[rand % difficulties.length];
+
+            const diffObj = DIFFICULTIES.find(d => d.id === chosen);
+
+            onStartGame(diffObj, selectedTime.seconds, { daily: true, seed });
+          }}
+          style={{
+            width: "100%",
+            padding: "18px",
+            borderRadius: "14px",
+            border: "1px solid #818cf8",
+            background: "rgba(99,102,241,0.1)",
+            color: "#818cf8",
+            fontWeight: 700,
+            fontSize: "var(--font-base)",
+            cursor: "pointer",
+          }}
+        >
+          🧩 Play Today’s Challenge
+        </button>
+      </div>
       <div
         style={{
           fontSize: "var(--font-sm)",
