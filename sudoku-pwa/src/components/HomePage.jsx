@@ -8,6 +8,9 @@ function getToday() {
 function hasPlayedToday() {
   return localStorage.getItem("sudoku-last-played") === getToday();
 }
+export function markPlayedToday() {
+  localStorage.setItem("sudoku-last-played", getTodayKey());
+}
 
 const DIFFICULTIES = [
   //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
