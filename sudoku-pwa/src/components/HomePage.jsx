@@ -5,6 +5,9 @@ import TutorialModal from "./Tutorial";
 function getToday() {
   return new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
 }
+function hasPlayedToday() {
+  return localStorage.getItem("sudoku-last-played") === getToday();
+}
 
 const DIFFICULTIES = [
   //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
