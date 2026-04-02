@@ -18,6 +18,10 @@ async function requestNotificationPermission() {
   const result = await Notification.requestPermission();
   return result;
 }
+function scheduleDailyReminder(hourLocal = 9) {
+  localStorage.setItem("sudoku-reminder-enabled", "true");
+  localStorage.setItem("sudoku-reminder-hour", String(hourLocal));
+}
 const DIFFICULTIES = [
   //API for puzzle generator has only 3 difficulties, so adaptive is just a placeholder for now(will be implemented)
   {
