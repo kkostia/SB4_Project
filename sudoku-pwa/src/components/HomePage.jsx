@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import logo from "../assets/logoSUDO.svg";
 import TutorialModal from "./Tutorial";
+import { getRank } from "../ranking.js";
 
 //Daily notifications
 function getToday() {
@@ -304,6 +305,7 @@ export default function HomePage({
   onToggleSound,
   streak = 0,
   achievements = [],
+  xp = 0,
 }) {
 
   const [showTutorial, setShowTutorial] = useState(false);
@@ -398,6 +400,47 @@ export default function HomePage({
             <span style={{ fontSize: "14px", color: "var(--text-muted)", fontWeight: 600 }}>ACHIEVEMENTS</span>
           </div>
         )}
+
+        {(() => {
+          const rank = getRank(xp);
+          const progress = rank.nextXP ? ((xp - rank.minXP) / (rank.nextXP - rank.minXP)) * 100 : 100;
+          return (
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              marginTop: "12px",
+              padding: "12px 16px",
+              background: "rgba(99,102,241,0.1)",
+              borderRadius: "8px",
+              border: "1px solid rgba(99,102,241,0.3)",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontSize: "20px" }}>⭐</span>
+                <span style={{ fontWeight: 800, color: "#818cf8", fontSize: "16px" }}>{rank.name}</span>
+                <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 600 }}>Level {rank.level}</span>
+              </div>
+              <div style={{
+                width: "100%",
+                height: "8px",
+                background: "rgba(255,255,255,0.1)",
+                borderRadius: "4px",
+                overflow: "hidden",
+              }}>
+                <div style={{
+                  width: `${Math.min(progress, 100)}%`,
+                  height: "100%",
+                  background: "#818cf8",
+                  borderRadius: "4px",
+                  transition: "width 0.3s",
+                }} />
+              </div>
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                {xp} XP {rank.nextXP ? `/ ${rank.nextXP} XP to ${rank.nextName}` : "(Max Rank)"}
+              </span>
+            </div>
+          );
+        })()}
 
         <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
           <button

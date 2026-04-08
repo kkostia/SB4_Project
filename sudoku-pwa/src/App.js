@@ -3,6 +3,7 @@ import "./App.css";
 import HomePage from "./components/HomePage.jsx";
 import GameBoard from "./components/Game.jsx";
 import { fetchPuzzle } from "./api/sudokuAPI.js";
+import { getXP, addXP, calcXPForGame } from "./ranking.js";
 
 function checkAchievement(difficulty, elapsed) {
   const thresholds = {
@@ -122,6 +123,7 @@ function App() {
   const [lastResult, setLastResult] = useState(null);
   const [streak, setStreak] = useState(() => Number(localStorage.getItem("sudoku-streak")) || 0);
   const [achievements, setAchievements] = useState(() => JSON.parse(localStorage.getItem("sudoku-achievements")) || []);
+  const [xp, setXP] = useState(() => getXP());
 
 
   async function handleStartGame(diff, limit) {
@@ -155,6 +157,7 @@ function App() {
           onToggleSound={toggleSound}
           achievements={achievements}
           streak={streak}
+          xp={xp}
         />
 
         {loading && (
@@ -195,6 +198,12 @@ function App() {
                 return updated;
               });
             }
+          }
+
+          const earned = calcXPForGame(result.difficulty, result.elapsed, result.won);
+          if (earned > 0) {
+            const newXP = addXP(earned);
+            setXP(newXP);
           }
 
           setScreen("home");
