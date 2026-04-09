@@ -145,6 +145,7 @@ export default function GameBoard({
     setWon(false);
     setTimedOut(false);
     setMistakes(0);
+    setMoves(0);
     setMistakeHistory([]);
     setHint(null);
     setHintLevel(0);
