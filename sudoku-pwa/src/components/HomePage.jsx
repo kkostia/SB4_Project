@@ -713,6 +713,16 @@ export default function HomePage({
         </div>
         <span style={{ fontSize: "18px" }}>›</span>
       </button>
+
+      {showDashboard && (
+        <ProgressDashboard
+          onClose={() => setShowDashboard(false)}
+          streak={streak}
+          achievements={achievements}
+          xp={xp}
+        />
+      )}
+
       {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
 
       <div
