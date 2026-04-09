@@ -651,6 +651,46 @@ export default function HomePage({
         )}
       </div>
 
+      // Adding the button for the progress dashboard
+      {/* progress dashboard entry point */}
+      <button
+        onClick={() => setShowDashboard(true)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "14px 18px",
+          borderRadius: "14px",
+          textAlign: "left",
+          background: "rgba(52,211,153,0.08)",
+          border: "1px solid rgba(52,211,153,0.25)",
+          cursor: "pointer",
+          width: "100%",
+          marginBottom: "10px",
+          outline: "none",
+          color: "#34d399",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span style={{ fontSize: "20px" }}>📊</span>
+          <div>
+            <p style={{ margin: 0, fontSize: "var(--font-base)", fontWeight: 700 }}>
+              Progress Dashboard
+            </p>
+            <p
+              style={{
+                margin: "2px 0 0",
+                fontSize: "var(--font-sm)",
+                color: "var(--text-muted)",
+              }}
+            >
+              View long-term performance trends
+            </p>
+          </div>
+        </div>
+        <span style={{ fontSize: "18px" }}>›</span>
+      </button>
+
       {/* lessons entry point */}
       <button
         onClick={() => setShowTutorial(true)}
