@@ -651,7 +651,7 @@ export default function HomePage({
         )}
       </div>
 
-      // Adding the button for the progress dashboard
+
       {/* progress dashboard entry point */}
       <button
         onClick={() => setShowDashboard(true)}
