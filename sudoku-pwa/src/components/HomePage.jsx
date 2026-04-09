@@ -310,6 +310,7 @@ export default function HomePage({
 }) {
 
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
 
