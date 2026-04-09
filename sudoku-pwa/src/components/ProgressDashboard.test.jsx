@@ -1,47 +1,51 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import HomePage from "./HomePage";
 
 beforeEach(() => {
     localStorage.clear();
 });
 
-// Creating a test that opens the progress dashboard pop up
+const defaultProps = {
+    onStartGame: jest.fn(),
+    lastResult: null,
+    bestTimes: {},
+    theme: "dark",
+    onSetTheme: jest.fn(),
+    largeFont: false,
+    onToggleFontSize: jest.fn(),
+    soundEnabled: false,
+    onToggleSound: jest.fn(),
+    streak: 3,
+    achievements: [],
+    xp: 0,
+};
 
 test("opens progress dashboard pop up", () => {
-    render(
-        <HomePage
-            onStartGame={() => { }}
-            streak={3}
-            achievements={[]}
-            xp={0}
-        />
-    );
+    render(<HomePage {...defaultProps} />);
 
-    fireEvent.click(screen.getByText(/Progress Dashboard/i));
+    fireEvent.click(screen.getByRole("button", { name: /Progress Dashboard/i }));
 
-    expect(screen.getByText(/Progress Dashboard/i)).toBeInTheDocument();
+    expect(
+        screen.getByRole("heading", { name: /Progress Dashboard/i })
+    ).toBeInTheDocument();
 });
-
-// Creating a test that makes sure the pop up can close
 
 test("closes progress dashboard pop up", () => {
-    render(
-        <HomePage
-            onStartGame={() => { }}
-            streak={3}
-            achievements={[]}
-            xp={0}
-        />
-    );
+    render(<HomePage {...defaultProps} />);
 
-    fireEvent.click(screen.getByText(/Progress Dashboard/i));
+    fireEvent.click(screen.getByRole("button", { name: /Progress Dashboard/i }));
 
-    fireEvent.click(screen.getByText("✕"));
+    expect(
+        screen.getByRole("heading", { name: /Progress Dashboard/i })
+    ).toBeInTheDocument();
 
-    expect(screen.queryByText(/Progress Dashboard/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "✕" }));
+
+    expect(
+        screen.queryByRole("heading", { name: /Progress Dashboard/i })
+    ).not.toBeInTheDocument();
 });
-
-// Creating a test that makes sure stats can be displayed from local storage
 
 test("displays stats from localStorage", () => {
     localStorage.setItem(
@@ -52,17 +56,11 @@ test("displays stats from localStorage", () => {
         ])
     );
 
-    render(
-        <HomePage
-            onStartGame={() => { }}
-            streak={2}
-            achievements={[]}
-            xp={0}
-        />
-    );
+    render(<HomePage {...defaultProps} />);
 
-    fireEvent.click(screen.getByText(/Progress Dashboard/i));
+    fireEvent.click(screen.getByRole("button", { name: /Progress Dashboard/i }));
 
-    expect(screen.getByText(/Total games/i)).toBeInTheDocument();
-    expect(screen.getByText(/Wins/i)).toBeInTheDocument();
+    expect(screen.getByText(/Total games:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Wins:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Win rate:/i)).toBeInTheDocument();
 });
