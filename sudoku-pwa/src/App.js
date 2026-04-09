@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import HomePage from "./components/HomePage.jsx";
+import HomePage, { markPlayedToday } from "./components/HomePage.jsx";
 import GameBoard from "./components/Game.jsx";
 import { fetchPuzzle } from "./api/sudokuAPI.js";
 import { getXP, addXP, calcXPForGame } from "./ranking.js";
@@ -126,7 +126,7 @@ function App() {
   const [xp, setXP] = useState(() => getXP());
 
 
-  async function handleStartGame(diff, limit) {
+  async function handleStartGame(diff, limit, options = {}) {
     setLoading(true);
     setError(null);
     try {
@@ -135,6 +135,7 @@ function App() {
       setPuzzle(data.puzzle);
       setSolution(data.solution);
       setTimeLimit(limit ?? null);
+      if (options.daily) markPlayedToday();
       setScreen("game");
     } catch (err) {
       setError("Failed to load puzzle. Try again.");

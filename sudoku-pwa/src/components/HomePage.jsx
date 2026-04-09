@@ -767,7 +767,6 @@ export default function HomePage({
             const chosen = difficulties[Math.floor(Math.random() * difficulties.length)];
 
             const diffObj = DIFFICULTIES.find(d => d.id === chosen);
-            markPlayedToday();
             onStartGame(diffObj, selectedTime.seconds, { daily: true });
           }}
           style={{

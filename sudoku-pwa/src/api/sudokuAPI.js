@@ -6,15 +6,15 @@ function parseGrid(data) {
 }
 
 export async function fetchPuzzle(difficulty, seed) {
-  const response = await fetch(
-    `https://www.youdosudoku.com/api/?difficulty=${difficulty.id}&solution=true&array=true`,
-    {
-      method: "GET",
-      headers: {
-        "x-api-key": "IxB8ACbEJpPvJZEVr-tU-N7zwqAHyJ3IYkT5ctkxjxA",
-      },
-    }
-  );
+  const response = await fetch("/api", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      difficulty: difficulty.id,
+      solution: true,
+      array: true,
+    }),
+  });
   if (!response.ok) throw new Error(`Error: ${response.status}`);
   const data = await response.json();
   return {
