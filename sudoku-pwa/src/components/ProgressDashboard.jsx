@@ -22,6 +22,33 @@ function getDashboardStats() {
             )
             : null;
 
+    const gamesWithAccuracy = results.filter(
+        (game) =>
+            typeof game.moves === "number" &&
+            typeof game.mistakes === "number" &&
+            game.moves > 0
+    );
+
+    const averageAccuracy =
+        gamesWithAccuracy.length > 0
+            ? Math.round(
+                gamesWithAccuracy.reduce((sum, game) => {
+                    const accuracy = ((game.moves - game.mistakes) / game.moves) * 100;
+                    return sum + accuracy;
+                }, 0) / gamesWithAccuracy.length
+            )
+            : null;
+
+    const lastGame =
+        gamesWithAccuracy.length > 0
+            ? gamesWithAccuracy[gamesWithAccuracy.length - 1]
+            : null;
+
+    const lastGameAccuracy =
+        lastGame && lastGame.moves > 0
+            ? Math.round(((lastGame.moves - lastGame.mistakes) / lastGame.moves) * 100)
+            : null;
+
     return {
         totalGames,
         wins,
@@ -29,6 +56,8 @@ function getDashboardStats() {
         winRate,
         bestTime,
         averageTime,
+        averageAccuracy,
+        lastGameAccuracy,
     };
 }
 
@@ -94,6 +123,19 @@ export default function ProgressDashboard({ onClose, streak, achievements, xp })
                     <p style={{ margin: 0 }}>Wins: <strong>{stats.wins}</strong></p>
                     <p style={{ margin: 0 }}>Losses: <strong>{stats.losses}</strong></p>
                     <p style={{ margin: 0 }}>Win rate: <strong>{stats.winRate}%</strong></p>
+
+                    {stats.averageAccuracy !== null && (
+                        <p style={{ margin: 0 }}>
+                            Average accuracy: <strong>{stats.averageAccuracy}%</strong>
+                        </p>
+                    )}
+
+                    {stats.lastGameAccuracy !== null && (
+                        <p style={{ margin: 0 }}>
+                            Last game accuracy: <strong>{stats.lastGameAccuracy}%</strong>
+                        </p>
+                    )}
+
                     <p style={{ margin: 0 }}>Current streak: <strong>{streak}</strong></p>
                     <p style={{ margin: 0 }}>Achievements: <strong>{achievements.length}</strong></p>
                     <p style={{ margin: 0 }}>Rank: <strong>{rank.name}</strong></p>

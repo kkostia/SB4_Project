@@ -18,6 +18,7 @@ export default function GameBoard({
   const [won, setWon] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
   const [mistakes, setMistakes] = useState(0);
+  const [moves, setMoves] = useState(0);
   const [paused, setPaused] = useState(false);
 
   // Creating the history state to check mistake history
@@ -41,7 +42,7 @@ export default function GameBoard({
   useEffect(() => {
     markPlayedToday();
   }, []);
-  
+
   // Single simple timer: always counts elapsed seconds up
   useEffect(() => {
     if (isOver || paused) return;
@@ -64,6 +65,13 @@ export default function GameBoard({
     if (isTimed && elapsed >= timeLimit && !won) {
       setTimedOut(true);
       playSound("timeout");
+      onGameEnd({
+        difficulty: difficulty.id,
+        elapsed: elapsed,
+        won: false,
+        mistakes: mistakes,
+        moves: moves,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elapsed, isTimed, timeLimit, won]);
@@ -88,6 +96,8 @@ export default function GameBoard({
     const newBoard = board.map((row) => [...row]);
     newBoard[r][c] = num;
     setBoard(newBoard);
+    // Adding a moves counter 
+    if (num !== 0) setMoves((prev) => prev + 1);
     if (!challengeMode || num === solution[r][c]) playSound("correct");// sound for correct move (only when not wrong)
 
     // Checking if a move is wrong in challenge mdoe
@@ -113,6 +123,8 @@ export default function GameBoard({
           difficulty: difficulty.id,
           elapsed: elapsed,
           won: false,
+          mistakes: newMistakes,
+          moves: moves + 1,
         });
         return;
       }
@@ -121,7 +133,7 @@ export default function GameBoard({
     if (checkWin(newBoard, solution)) {
       setWon(true);
       playSound("win");
-      onGameEnd({ difficulty: difficulty.id, elapsed: elapsed, won: true });
+      onGameEnd({ difficulty: difficulty.id, elapsed: elapsed, won: true, mistakes: mistakes, moves: num !== 0 ? moves + 1 : moves, });
     }
   }
 
@@ -133,6 +145,7 @@ export default function GameBoard({
     setWon(false);
     setTimedOut(false);
     setMistakes(0);
+    setMoves(0);
     setMistakeHistory([]);
     setHint(null);
     setHintLevel(0);
@@ -177,7 +190,7 @@ export default function GameBoard({
     const getCandidates = (r, c) => {
       if (board[r][c] !== 0) return [];
       const used = new Set([...rowVals(r), ...colVals(c), ...boxVals(r, c)]);
-      return [1,2,3,4,5,6,7,8,9].filter(n => !used.has(n));
+      return [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(n => !used.has(n));
     };
 
     // Strategy 1: Naked Single — only one candidate for a cell
@@ -265,8 +278,9 @@ export default function GameBoard({
     setHint({
       row: null, col: null, value: null,
       strategy: "No hint available",
-      explanation: "No beginner-level hint found. Try scanning each row and column for missing numbers."});
-      setHintLevel(1);
+      explanation: "No beginner-level hint found. Try scanning each row and column for missing numbers."
+    });
+    setHintLevel(1);
   }
 
   // ADDED: Web Audio sound effects
@@ -313,7 +327,7 @@ export default function GameBoard({
         osc.start();
         osc.stop(ctx.currentTime + 0.5);
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   function formatTime(s) {
@@ -341,7 +355,7 @@ export default function GameBoard({
             {paused ? "Resume" : "Pause"}
           </button>
         )}
-        
+
         {/* TEMP: cheat button for testing — remove before commit */}
         {process.env.NODE_ENV === "development" && (
           <button
@@ -439,7 +453,7 @@ export default function GameBoard({
         )}
       </div>
 
-     {/* Progressive Hint banner */}
+      {/* Progressive Hint banner */}
       {hint && hintLevel >= 1 && (
         <div style={{
           background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.4)",
@@ -486,21 +500,21 @@ export default function GameBoard({
           style={{
             width: "100%", padding: "12px", marginBottom: "12px",
             // Logic for background color
-            background: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
-              ? "rgba(255,255,255,0.03)" 
+            background: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3))
+              ? "rgba(255,255,255,0.03)"
               : "rgba(251,191,36,0.1)",
             // Logic for border color
-            border: `1px solid ${(hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
-              ? "var(--border-color)" 
+            border: `1px solid ${(hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3))
+              ? "var(--border-color)"
               : "rgba(251,191,36,0.4)"}`,
-            borderRadius: "10px", 
+            borderRadius: "10px",
             // Logic for cursor
-            cursor: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
-              ? "not-allowed" 
+            cursor: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3))
+              ? "not-allowed"
               : "pointer",
             // Logic for text color
-            color: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3)) 
-              ? "var(--text-muted)" 
+            color: (hintsUsed >= maxHints && (hintLevel === 0 || hintLevel === 3))
+              ? "var(--text-muted)"
               : "#fbbf24",
             fontSize: "var(--font-sm)", fontWeight: 700,
           }}
@@ -518,53 +532,53 @@ export default function GameBoard({
       )}
 
       {/* Mistake history */}
-<div
-  style={{
-    background: "var(--bg-surface)",
-    border: "1px solid var(--border-color)",
-    borderRadius: "12px",
-    padding: "12px",
-    marginBottom: "16px",
-  }}
->
-  <div
-    style={{
-      fontSize: "var(--font-base)",
-      fontWeight: 700,
-      marginBottom: "8px",
-      color: "var(--text-primary)",
-    }}
-  >
-    Mistake History
-  </div>
+      <div
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-color)",
+          borderRadius: "12px",
+          padding: "12px",
+          marginBottom: "16px",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "var(--font-base)",
+            fontWeight: 700,
+            marginBottom: "8px",
+            color: "var(--text-primary)",
+          }}
+        >
+          Mistake History
+        </div>
 
-  {mistakeHistory.length === 0 ? (
-    <p
-      style={{
-        margin: 0,
-        color: "var(--text-muted)",
-        fontSize: "var(--font-sm)",
-      }}
-    >
-      No mistakes yet.
-    </p>
-  ) : (
-    <ul
-      style={{
-        margin: 0,
-        paddingLeft: "18px",
-        color: "var(--text-primary)",
-        fontSize: "var(--font-sm)",
-      }}
-    >
-      {mistakeHistory.map((mistake, index) => (
-        <li key={index} style={{ marginBottom: "6px" }}>
-          Row {mistake.row}, Col {mistake.col}: entered {mistake.entered}, correct was {mistake.correct}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
+        {mistakeHistory.length === 0 ? (
+          <p
+            style={{
+              margin: 0,
+              color: "var(--text-muted)",
+              fontSize: "var(--font-sm)",
+            }}
+          >
+            No mistakes yet.
+          </p>
+        ) : (
+          <ul
+            style={{
+              margin: 0,
+              paddingLeft: "18px",
+              color: "var(--text-primary)",
+              fontSize: "var(--font-sm)",
+            }}
+          >
+            {mistakeHistory.map((mistake, index) => (
+              <li key={index} style={{ marginBottom: "6px" }}>
+                Row {mistake.row}, Col {mistake.col}: entered {mistake.entered}, correct was {mistake.correct}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       {/* Number pad */}
       <div style={s.numpad}>
