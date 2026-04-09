@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import logo from "../assets/logoSUDO.svg";
 import TutorialModal from "./Tutorial";
+import ProgressDashboard from "./ProgressDashboard";
 import { getRank } from "../ranking.js";
 
 //Daily notifications
@@ -32,7 +33,7 @@ function shouldFireReminderNow() {
   if (localStorage.getItem("sudoku-reminder-enabled") !== "true") return false;
   if (hasPlayedToday()) return false;
   const lastFired = localStorage.getItem("sudoku-reminder-last-fired");
-  if (lastFired === getToday()) return false; 
+  if (lastFired === getToday()) return false;
   const preferredHour = parseInt(localStorage.getItem("sudoku-reminder-hour") || "9", 10);
   return new Date().getHours() >= preferredHour;
 }
@@ -163,7 +164,7 @@ function getPerformanceStats(lastResult) {
 //Daily reminders
 function DailyReminderCard() {
   const notificationsSupported = "Notification" in window;
- 
+
   const [permission, setPermission] = useState(
     notificationsSupported ? Notification.permission : "unsupported"
   );
@@ -174,7 +175,7 @@ function DailyReminderCard() {
     parseInt(localStorage.getItem("sudoku-reminder-hour") || "9", 10)
   );
   const [justEnabled, setJustEnabled] = useState(false);
- 
+
   const handleToggle = async () => {
     if (enabled) {
       cancelDailyReminder();
@@ -195,14 +196,14 @@ function DailyReminderCard() {
       }
     }
   };
- 
+
   const handleHourChange = (hour) => {
     setSelectedHour(hour);
     if (enabled) scheduleDailyReminder(hour);
   };
- 
+
   if (!notificationsSupported) return null;
- 
+
   return (
     <div
       style={{
@@ -225,12 +226,12 @@ function DailyReminderCard() {
               {permission === "denied"
                 ? "Notifications blocked — enable in browser settings"
                 : enabled
-                ? `Reminding you at ${REMINDER_HOURS.find(h => h.value === selectedHour)?.label}`
-                : "Never miss your daily puzzle"}
+                  ? `Reminding you at ${REMINDER_HOURS.find(h => h.value === selectedHour)?.label}`
+                  : "Never miss your daily puzzle"}
             </p>
           </div>
         </div>
- 
+
         <button
           onClick={handleToggle}
           disabled={permission === "denied"}
@@ -253,7 +254,7 @@ function DailyReminderCard() {
           />
         </button>
       </div>
- 
+
       {enabled && (
         <div style={{ marginTop: "12px" }}>
           <p style={{ margin: "0 0 8px", fontSize: "var(--font-sm)", color: "var(--text-muted)" }}>
@@ -283,7 +284,7 @@ function DailyReminderCard() {
           </div>
         </div>
       )}
- 
+
       {justEnabled && (
         <p style={{ margin: "10px 0 0", fontSize: "var(--font-sm)", color: "#34d399", fontWeight: 600 }}>
           ✓ Reminders enabled! Check your notifications.
@@ -309,6 +310,7 @@ export default function HomePage({
 }) {
 
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
   const [hovered, setHovered] = useState(null);
   const [selectedTime, setSelectedTime] = useState(TIME_LIMITS[3]); // default: unlimited
 
@@ -649,6 +651,46 @@ export default function HomePage({
         )}
       </div>
 
+
+      {/* progress dashboard entry point */}
+      <button
+        onClick={() => setShowDashboard(true)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "14px 18px",
+          borderRadius: "14px",
+          textAlign: "left",
+          background: "rgba(52,211,153,0.08)",
+          border: "1px solid rgba(52,211,153,0.25)",
+          cursor: "pointer",
+          width: "100%",
+          marginBottom: "10px",
+          outline: "none",
+          color: "#34d399",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span style={{ fontSize: "20px" }}>📊</span>
+          <div>
+            <p style={{ margin: 0, fontSize: "var(--font-base)", fontWeight: 700 }}>
+              Progress Dashboard
+            </p>
+            <p
+              style={{
+                margin: "2px 0 0",
+                fontSize: "var(--font-sm)",
+                color: "var(--text-muted)",
+              }}
+            >
+              View long-term performance trends
+            </p>
+          </div>
+        </div>
+        <span style={{ fontSize: "18px" }}>›</span>
+      </button>
+
       {/* lessons entry point */}
       <button
         onClick={() => setShowTutorial(true)}
@@ -671,6 +713,16 @@ export default function HomePage({
         </div>
         <span style={{ fontSize: "18px" }}>›</span>
       </button>
+
+      {showDashboard && (
+        <ProgressDashboard
+          onClose={() => setShowDashboard(false)}
+          streak={streak}
+          achievements={achievements}
+          xp={xp}
+        />
+      )}
+
       {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
 
       <div
