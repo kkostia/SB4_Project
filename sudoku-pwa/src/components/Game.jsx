@@ -65,6 +65,13 @@ export default function GameBoard({
     if (isTimed && elapsed >= timeLimit && !won) {
       setTimedOut(true);
       playSound("timeout");
+      onGameEnd({
+        difficulty: difficulty.id,
+        elapsed: elapsed,
+        won: false,
+        mistakes: mistakes,
+        moves: moves,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elapsed, isTimed, timeLimit, won]);
